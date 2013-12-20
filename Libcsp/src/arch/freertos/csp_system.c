@@ -76,7 +76,7 @@ int csp_sys_reboot(void) {
 }
 
 void csp_sys_set_color(csp_color_t color) {
-
+#if CSP_USE_DEBUG_COLOR
 	unsigned int color_code, modifier_code;
 	switch (color & COLOR_MASK_COLOR) {
 		case COLOR_BLACK:
@@ -115,4 +115,5 @@ void csp_sys_set_color(csp_color_t color) {
 	}
 
 	printf("\033[%u;%um", modifier_code, color_code);
+#endif
 }

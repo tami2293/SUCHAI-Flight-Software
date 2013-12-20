@@ -91,7 +91,7 @@ int main(void)
 
     /* Crating all tasks */
     int node = 1;
-    xTaskCreate(taskTestCSP, (signed char *)"CSP", 2*configMINIMAL_STACK_SIZE, (void *)(&node), 3, NULL);
+    xTaskCreate(taskTestCSP, (signed char *)"CSP", 4*configMINIMAL_STACK_SIZE, (void *)(&node), 3, NULL);
     xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
     xTaskCreate(taskExecuter, (signed char *)"executer", 5*configMINIMAL_STACK_SIZE, NULL, 4, NULL);
 //    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
@@ -186,6 +186,7 @@ void on_reset(void)
 #define STDERR  2
 #define LF   '\n'
 #define CR   '\r'
+#define STDOUT_NO_CR
 
 void    mon_putc(char ch);
 
@@ -211,6 +212,10 @@ void mon_putc(char ch)
 #ifndef STDOUT_NO_CR_WITH_LF
     if (LF == ch)
         putcUART1(CR);
+#endif
+#ifdef STDOUT_NO_CR
+    if (CR == ch)
+        return;
 #endif
     putcUART1(ch);
 }

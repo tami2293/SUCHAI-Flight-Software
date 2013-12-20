@@ -1,5 +1,6 @@
 #include "taskTest.h"
 #include "i2c.h"
+#include "csp_if_lo.h"
 
 void taskTest(void *param)
 {
@@ -31,7 +32,15 @@ void taskTestCSP(void *param)
     csp_i2c_init(0xAA, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(100, 2);
+    csp_route_start_task(512, 2);
+
+    //DEBUG
+    printf("Conn table\r\n");
+    csp_conn_print_table();
+    printf("Route table\r\n");
+    csp_route_print_table();
+    printf("Interfaces\r\n");
+    csp_route_print_interfaces();
 
     int pingResult;
 
@@ -39,7 +48,7 @@ void taskTestCSP(void *param)
     {
         vTaskDelay(Delayms);
 
-        pingResult = csp_ping(10, 3000, 100, CSP_O_NONE);
+        pingResult = csp_ping(1, 3000, 100, CSP_O_NONE);
         #if SCH_GRL_VERBOSE
             printf("Ping with payload of %d bytes, took %d ms\n", 100, pingResult);
         #endif

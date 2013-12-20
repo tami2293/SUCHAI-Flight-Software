@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/main.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/System/taskTest.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/System/include/taskTest.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/inttypes.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Drivers/i2c_comm.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/drivers/i2c/csp_i2c.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/include/csp/drivers/csp_i2c.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/arch/freertos/csp_system.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/FreeRTOS/Source/include/task.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/FreeRTOS/Source/tasks.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/FreeRTOSConfig.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/csp_route.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/arch/freertos/csp_thread.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/csp_conn.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/arch/freertos/csp_semaphore.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/FreeRTOS/Source/include/semphr.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/FreeRTOS/Source/queue.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/include/csp/csp_autoconfig.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/interfaces/csp_if_i2c.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/include/csp/interfaces/csp_if_lo.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/interfaces/csp_if_lo.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/csp_route.h</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/src/csp_debug.c</file>
+        <file>file:/mnt/datos/Documentos/CGz/TRX_SUCHAI/Libcsp/include/csp/arch/csp_system.h</file>
+    </open-files>
 </project-private>

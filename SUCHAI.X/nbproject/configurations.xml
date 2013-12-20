@@ -38,7 +38,6 @@
             </logicalFolder>
             <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
               <itemPath>../Libcsp/include/csp/drivers/csp_i2c.h</itemPath>
-              <itemPath>../Libcsp/include/csp/drivers/csp_usart.h</itemPath>
             </logicalFolder>
             <logicalFolder name="interfaces" displayName="interfaces" projectFiles="true">
               <itemPath>../Libcsp/include/csp/interfaces/csp_if_i2c.h</itemPath>
@@ -126,6 +125,7 @@
             <itemPath>../Libcsp/src/crypto/csp_xtea.h</itemPath>
           </logicalFolder>
           <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+            <itemPath>../Libcsp/src/drivers/i2c/csp_i2c.c</itemPath>
           </logicalFolder>
           <logicalFolder name="interfaces" displayName="interfaces" projectFiles="true">
             <itemPath>../Libcsp/src/interfaces/csp_if_lo.c</itemPath>

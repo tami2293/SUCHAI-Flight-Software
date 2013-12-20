@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef I2C_H_
 #define I2C_H_
 
+#include <stdint.h>
+
 /**
  * The return value of the driver is a bit strange,
  * It should return E_NO_ERR if successfull and the value is -1
