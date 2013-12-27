@@ -103,7 +103,7 @@ your application. */
 #define configTICK_RATE_HZ                      ( ( portTickType ) 100 )
 #define configMAX_PRIORITIES                    ( ( unsigned portBASE_TYPE ) 5 )
 #define configMINIMAL_STACK_SIZE                ( 115 ) /* Don't change (115 bytes Min) */
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 5100 )
+#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 5600 )
 #define configMAX_TASK_NAME_LEN                 ( 8 )
 #define configUSE_TRACE_FACILITY                1
 #define configUSE_16_BIT_TICKS                  1
@@ -135,7 +135,7 @@ your application. */
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
 
 /* Interrupt nesting behaviour configuration. */
-#define configKERNEL_INTERRUPT_PRIORITY         0x01
+#define configKERNEL_INTERRUPT_PRIORITY         0x04
 /* #define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application] */
 
 /* Define to trap errors during development. */
@@ -148,16 +148,16 @@ to exclude the API function. */
 #define INCLUDE_uxTaskPriorityGet               0
 #define INCLUDE_vTaskDelete                     0
 #define INCLUDE_vTaskSuspend                    1
-#define INCLUDE_xTaskResumeFromISR              0
+#define INCLUDE_xTaskResumeFromISR              1
 #define INCLUDE_vTaskDelayUntil                 1
 #define INCLUDE_vTaskDelay                      1
-#define INCLUDE_xTaskGetSchedulerState          0
-#define INCLUDE_xTaskGetCurrentTaskHandle       0
+#define INCLUDE_xTaskGetSchedulerState          1
+#define INCLUDE_xTaskGetCurrentTaskHandle       1
 #define INCLUDE_uxTaskGetStackHighWaterMark     1
-#define INCLUDE_xTaskGetIdleTaskHandle          0
+#define INCLUDE_xTaskGetIdleTaskHandle          1
 #define INCLUDE_xTimerGetTimerDaemonTaskHandle  0
-#define INCLUDE_pcTaskGetTaskName               0
-#define INCLUDE_eTaskGetState                   0
+#define INCLUDE_pcTaskGetTaskName               1
+#define INCLUDE_eTaskGetState                   1
 
 /* A header file that defines trace macro can be included here. */
 

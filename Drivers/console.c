@@ -367,9 +367,10 @@ BOOL con_set_active(BOOL on_off)
  */
 void con_printf(char* c)
 {
-    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
-    SendStrRS232(c,RS2_M_UART1);
-    xSemaphoreGive(consolePrintfSem);
+    printf(c);
+//    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+//    SendStrRS232(c,RS2_M_UART1);
+//    xSemaphoreGive(consolePrintfSem);
 }
 
 /*------------------------------------------------------------------------------

@@ -13,7 +13,8 @@
 #include "csp_i2c.h"
 
 void taskTest(void *param);
-void taskTestCSP(void *param);
+void taskClientCSP(void *param);
+void taskServerCSP(void *param);
 
 #endif
 

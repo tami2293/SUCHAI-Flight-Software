@@ -77,6 +77,7 @@ xSemaphoreHandle dataRepositorySem, consolePrintfSem;
 xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue;
 
 static void on_reset(void);
+static void csp_initialization(void);
 
 int main(void)
 {
@@ -89,22 +90,22 @@ int main(void)
     dataRepositorySem = xSemaphoreCreateMutex();
     consolePrintfSem = xSemaphoreCreateMutex();
 
+    /* On reset */
+    on_reset();
+
+    /* Libcsp init */
+    csp_initialization();
+
     /* Crating all tasks */
-    int node = 1;
-    xTaskCreate(taskTestCSP, (signed char *)"CSP", 4*configMINIMAL_STACK_SIZE, (void *)(&node), 3, NULL);
-    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-    xTaskCreate(taskExecuter, (signed char *)"executer", 5*configMINIMAL_STACK_SIZE, NULL, 4, NULL);
+    xTaskCreate(taskServerCSP, (signed char *)"SRV", 5*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(taskClientCSP, (signed char *)"CLI", 5*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+//    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+//    xTaskCreate(taskExecuter, (signed char *)"executer", 1*configMINIMAL_STACK_SIZE, NULL, 4, NULL);
 //    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
 
 
 //    xTaskCreate(taskTest, (signed char*)"taskTest", configMINIMAL_STACK_SIZE, (void *)"T1 Running...", 1, NULL);
 //    xTaskCreate(taskTest, (signed char*)"taskTest", configMINIMAL_STACK_SIZE, (void *)"T2 Running...", 2, NULL);
-
-    /* Configure Peripherals */
-
-    /* On reset */
-    on_reset();
-
 
     /* Start the scheduler. Should never return */
     printf(">>Starting FreeRTOS [->]\r\n");
@@ -180,6 +181,29 @@ void on_reset(void)
     SetPriorityIntU1RX(5);
 }
 
+static void csp_initialization(void)
+{
+    /* Init buffer system with 3 packets of maximum 256 bytes each */
+    csp_buffer_init(10, 128);
+
+    /* Init CSP with address MY_ADDRESS */
+    csp_init(1);
+
+//    i2c_init(0, I2C_MASTER, 0xAA, 400, 2, 2, NULL);
+//    csp_i2c_init(0xAA, 0, 400);
+
+//    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+    csp_route_start_task(100, 1);
+
+    //DEBUG
+    printf("Conn table\r\n");
+    csp_conn_print_table();
+    printf("Route table\r\n");
+    csp_route_print_table();
+    printf("Interfaces\r\n");
+    csp_route_print_interfaces();
+}
+
 
 #define STDIN   0
 #define STDOUT  1
@@ -193,6 +217,7 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
+    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
     int i = 0;
     switch (handle)
     {
@@ -202,6 +227,7 @@ write(int handle, void * buffer, unsigned int len)
                 mon_putc(((char*)buffer)[i++]);
             break;
     }
+    xSemaphoreGive(consolePrintfSem);
     return (len);  // number of characters written
 }
 
