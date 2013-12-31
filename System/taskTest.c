@@ -24,15 +24,16 @@ void taskClientCSP(void *param)
 //    int csp_node = *(int *)param;
 
     int pingResult;
+    int len = 10;
 
     while(1)
     {
         vTaskDelay(Delayms);
 
         printf("[CLI] Sending ping\n");
-        pingResult = csp_ping(1, 3000, 1, CSP_O_NONE);
+        pingResult = csp_ping(10, 3000, len, CSP_O_NONE);
         #if SCH_GRL_VERBOSE
-            printf("Ping with payload of %d bytes, took %d ms\n", 100, pingResult);
+            printf("Ping with payload of %d bytes, took %d ms\n", len, pingResult);
         #endif
     }
 }

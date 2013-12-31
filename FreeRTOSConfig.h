@@ -135,7 +135,7 @@ your application. */
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
 
 /* Interrupt nesting behaviour configuration. */
-#define configKERNEL_INTERRUPT_PRIORITY         0x04
+#define configKERNEL_INTERRUPT_PRIORITY         0x01
 /* #define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application] */
 
 /* Define to trap errors during development. */

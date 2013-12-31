@@ -207,7 +207,7 @@ typedef struct csp_iface_s {
 	nexthop_t nexthop;			/**< Next hop function */
 	uint8_t promisc;			/**< Promiscuous mode enabled */
 	uint16_t mtu;				/**< Maximum Transmission Unit of interface */
-	uint8_t split_horizon_off;	/**< Disable the route-loop prevention on if */
+	uint8_t split_horizon_off;              /**< Disable the route-loop prevention on if */
 	uint32_t tx;				/**< Successfully transmitted packets */
 	uint32_t rx;				/**< Successfully received packets */
 	uint32_t tx_error;			/**< Transmit errors */

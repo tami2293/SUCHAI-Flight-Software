@@ -32,8 +32,8 @@ static char i2c_slave_getc(void);
 /**
  * Wait method selection. Uncomment only one define statement
  */
-//#define _I2C_BUSY_WAIT ///< Uses busy waiting without ISR
-#define _I2C_PWRS_WAIT ///< Uses IDLE mode waiting with ISR
+#define _I2C_BUSY_WAIT ///< Uses busy waiting without ISR
+//#define _I2C_PWRS_WAIT ///< Uses IDLE mode waiting with ISR
 //#define _I2C_RTOS_WAIT ///< Uses FreeRTOS semaphore syncronization with ISR
 
 /**

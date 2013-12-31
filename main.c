@@ -189,10 +189,10 @@ static void csp_initialization(void)
     /* Init CSP with address MY_ADDRESS */
     csp_init(1);
 
-//    i2c_init(0, I2C_MASTER, 0xAA, 400, 2, 2, NULL);
-//    csp_i2c_init(0xAA, 0, 400);
+    i2c_init(0, I2C_MASTER, 0xAA, 400, 2, 2, NULL);
+    csp_i2c_init(0xAA, 0, 400);
 
-//    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
+    csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
     csp_route_start_task(100, 1);
 
     //DEBUG
