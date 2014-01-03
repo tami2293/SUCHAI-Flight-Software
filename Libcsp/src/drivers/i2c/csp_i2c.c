@@ -36,7 +36,6 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
         return CSP_ERR_DRIVER;
     
 #ifdef SCH_GRL_VERBOSE
-    //Some debug
     printf("To: %d. Size: %d. Data: ", frame->dest, frame->len);
     int i; for(i=0; i<frame->len; i++) printf("0x%X,", frame->data[i]); printf("\n");
 #endif
@@ -46,15 +45,23 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
 
     //Send frame via I2C1
     int total = i2c1_master_fputs((const char*)(frame->data), frame->len, d_address, d_address_len);
-    
+
     if(total == frame->len)
     {
-        printf("Success in I2C driver (%d of %d bytes transmited)", total, frame->len);
+#ifdef SCH_GRL_VERBOSE
+        printf("Success in I2C driver (%d of %d bytes transmited)\n", total, frame->len);
+//        char recv[frame->len];
+//        total = i2c1_master_fgets(recv, frame->len, d_address, 2);
+//        printf("Received: ");
+//        for(i=0; i<frame->len; i++) printf("%c,", recv[i]); printf("\n");
+#endif
         return E_NO_ERR;
     }
     else
     {
-        printf("Error in I2C driver (%d of %d bytes transmited)", total, frame->len);
+#ifdef SCH_GRL_VERBOSE
+        printf("Error in I2C driver (%d of %d bytes transmited)\n", total, frame->len);
+#endif
         return CSP_ERR_DRIVER;
     }
 }

@@ -28,6 +28,7 @@
 #include <PPS.h>
 
 /* Drivers includes */
+#include "i2c_comm.h"
 
 /* System includes */
 #include "SUCHAI_config.h"
@@ -72,6 +73,11 @@
 #pragma config GCP = OFF                // General Code Segment Code Protect (Code protection is disabled)
 #pragma config JTAGEN = OFF             // JTAG Port Enable (JTAG port is disabled)
 
+///* PIC24F CONFIGURATION */
+//_CONFIG1(JTAGEN_OFF& GCP_OFF& GWRP_OFF& FWDTEN_OFF& FWPSA_PR128& WDTPS_PS32768 );
+//_CONFIG2(IESO_OFF& FNOSC_PRIPLL& FCKSM_CSECME& OSCIOFNC_OFF& IOL1WAY_ON& POSCMOD_XT);
+//_CONFIG3(WPCFG_WPCFGDIS& WPDIS_WPDIS);
+
 /* Global variables */
 xSemaphoreHandle dataRepositorySem, consolePrintfSem;
 xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue;
@@ -82,9 +88,9 @@ static void csp_initialization(void);
 int main(void)
 {
     /* Initializing shared Queues */
-    dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
-    executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
-    executerStatQueue = xQueueCreate(1,sizeof(int));
+//    dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
+//    executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
+//    executerStatQueue = xQueueCreate(1,sizeof(int));
 
     /* Initializing shared Semaphore */
     dataRepositorySem = xSemaphoreCreateMutex();
@@ -188,9 +194,7 @@ static void csp_initialization(void)
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(1);
-
-    i2c_init(0, I2C_MASTER, 0xAA, 400, 2, 2, NULL);
-    csp_i2c_init(0xAA, 0, 400);
+    csp_i2c_init(0xAA, 0, 100);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
     csp_route_start_task(100, 1);
