@@ -18,7 +18,7 @@
  */
 
 #include "i2c_comm.h"
-//#include "console_tasks.h"
+#include "console_tasks.h"
 
 //Static functions
 static void i2c_master_wait(int device);
@@ -26,8 +26,10 @@ static int i2c_master_wait_and_check(int device, int check_ack);
 static int i2c_check_ack(int device);
 static int i2c_check_bus_collision(int device);
 
-static void i2c_slave_putc(char data);
-static char i2c_slave_getc(void);
+static void i2c1_slave_putc(char data);
+static void i2c2_slave_putc(char data);
+static char i2c1_slave_getc(void);
+static char i2c2_slave_getc(void);
 
 /**
  * Wait method selection. Uncomment only one define statement
@@ -46,12 +48,16 @@ static char i2c_slave_getc(void);
 #endif
 
 #ifdef _I2C_SLAVE_BUFF
-#define _I2C_RCV_BUFF_LEN   10  ///< Slave recive buffer lenght
-int i2c_slave_address = 0;      ///< Salve r/w selected address
-char I2C_BUFF[_I2C_RCV_BUFF_LEN]; ///< Salve data buffer
+#define _I2C1_RCV_BUFF_LEN   16  ///< Slave recive buffer lenght
+#define _I2C2_RCV_BUFF_LEN   16  ///< Slave recive buffer lenght
+int i2c1_slave_address = 0;      ///< Salve r/w selected address
+int i2c2_slave_address = 0;      ///< Salve r/w selected address
+char I2C1_BUFF[_I2C1_RCV_BUFF_LEN]; ///< Salve data buffer
+char I2C2_BUFF[_I2C2_RCV_BUFF_LEN]; ///< Salve data buffer
 #endif
 
-int I2C_SLAVE_ST = I2C_SLV_IDLE;
+int I2C1_SLAVE_ST = I2C_SLV_IDLE;
+int I2C2_SLAVE_ST = I2C_SLV_IDLE;
 
 /**
  * Confiugures I2C periferal to operate at user defined frecuency, iterrups are
@@ -67,12 +73,28 @@ int I2C_SLAVE_ST = I2C_SLV_IDLE;
 void i2c1_open(unsigned int BRG, char address)
 {
 #ifndef _I2C_RTOS_WAIT
-    ConfigIntI2C1(MI2C_INT_OFF & MI2C_INT_PRI_0 & SI2C_INT_OFF & SI2C_INT_PRI_0); /* Software mode state trantition */
+    ConfigIntI2C1(MI2C_INT_OFF & MI2C_INT_PRI_0 & SI2C_INT_ON & SI2C_INT_PRI_5); /* Software mode state trantition */
 #else
     ConfigIntI2C1(MI2C_INT_ON & MI2C_INT_PRI_6 & SI2C_INT_ON & SI2C_INT_PRI_5); /* Interrupt mode state trantition */
 #endif
 
     OpenI2C1(I2C_ON & I2C_IDLE_CON & I2C_CLK_HLD & I2C_IPMI_DIS & I2C_7BIT_ADD &
+            I2C_SLW_EN & I2C_SM_DIS & I2C_GCALL_DIS & I2C_STR_EN & I2C_ACK &
+            I2C_ACK_DIS & I2C_RCV_DIS & I2C_STOP_DIS & I2C_RESTART_DIS & I2C_START_DIS,
+            BRG) ; /* BRG according to I2C Clock Rate table*/
+
+    I2C1ADD = (unsigned int)address;
+}
+
+void i2c2_open(unsigned int BRG, char address)
+{
+#ifndef _I2C_RTOS_WAIT
+    ConfigIntI2C2(MI2C_INT_OFF & MI2C_INT_PRI_0 & SI2C_INT_ON & SI2C_INT_PRI_5); /* Software mode state trantition */
+#else
+    ConfigIntI2C2(MI2C_INT_ON & MI2C_INT_PRI_6 & SI2C_INT_ON & SI2C_INT_PRI_5); /* Interrupt mode state trantition */
+#endif
+
+    OpenI2C2(I2C_ON & I2C_IDLE_CON & I2C_CLK_HLD & I2C_IPMI_DIS & I2C_7BIT_ADD &
             I2C_SLW_EN & I2C_SM_DIS & I2C_GCALL_DIS & I2C_STR_EN & I2C_ACK &
             I2C_ACK_DIS & I2C_RCV_DIS & I2C_STOP_DIS & I2C_RESTART_DIS & I2C_START_DIS,
             BRG) ; /* BRG according to I2C Clock Rate table*/
@@ -130,6 +152,48 @@ int i2c1_master_fputs(const char *data, int len, char *address, int addlen)
     //Close session sending stop condition
     StopI2C1();
     i2c_master_wait_and_check(I2C_MOD1, 0); //TODO: No revisar ACK
+
+    return count;
+}
+
+int i2c2_master_fputs(const char *data, int len, char *address, int addlen)
+{
+    register int ok = 0;
+    register int count = 0;
+    char w_address = address[0]<<1;                //Address+W
+
+    //Waits while bus is busy
+    IdleI2C2();
+
+    //Init session sending Start condition
+    StartI2C2();
+    ok = i2c_master_wait_and_check(I2C_MOD2, 0);   //Wait op. ends and check errors
+    if(!ok) return count;                          //Return in error
+
+    //Send device address
+    MasterWriteI2C2(w_address);
+    ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+    if(!ok) return count;
+
+    //Send byte address
+    for(count=1; count<addlen; count++)
+    {
+        MasterWriteI2C2(address[count]);
+        ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+        if(!ok) return 0;
+    }
+
+    //Start sending data
+    for(count=0; count<len; count++)
+    {
+        MasterWriteI2C2(data[count]);
+        ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+        if(!ok) return count;
+    }
+
+    //Close session sending stop condition
+    StopI2C2();
+    i2c_master_wait_and_check(I2C_MOD2, 0); //TODO: No revisar ACK
 
     return count;
 }
@@ -210,12 +274,95 @@ int i2c1_master_fgets(char *data, int len, char *address, int addlen)
     return count;
 }
 
+int i2c2_master_fgets(char *data, int len, char *address, int addlen)
+{
+    //STEP1 -> Set read direcction
+    register int ok = 0;
+    register int count = 0;
+    char w_address = address[0]<<1;                //Address+W
+    char r_address = w_address+1;                  //Address+R
+
+    //Waits while bus is busy
+    IdleI2C2();
+
+    //Init session sending Start condition
+    StartI2C2();
+    ok = i2c_master_wait_and_check(I2C_MOD2, 0);   //Wait op. ends and check errors
+    if(!ok) return count;                       //Return in error
+
+    //Send device address
+    MasterWriteI2C2(w_address);
+    ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+    if(!ok) return count;
+
+    //Send byte address
+    for(count=1; count<addlen; count++)
+    {
+        MasterWriteI2C2(address[count]);
+        ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+        if(!ok) return 0;
+    }
+
+    //STEP2 -> Start reception
+    RestartI2C2();
+    ok = i2c_master_wait_and_check(I2C_MOD2, 0);
+    if(!ok) return 0;
+
+//    printf("i2c1_slave_address %d\n", i2c1_slave_address);
+
+    MasterWriteI2C2(r_address); //Address + W
+    ok = i2c_master_wait_and_check(I2C_MOD2, 1);
+    if(!ok) return 0;
+
+    register int last = len-1;
+    for(count=0; count<len; count++)
+    {
+        I2C2CONbits.RCEN = 1; //Start reception
+        ok = i2c_master_wait_and_check(I2C_MOD2, 0); //Wait 8 clocks
+        if(!ok) return count;
+
+        if(count < last) AckI2C2(); //Send ACK
+        else NotAckI2C2(); //Not ACK and ends operation
+
+        char new_data = (char)I2C2RCV;
+//        printf("i2c2 fgets %c\n", new_data);
+        data[count] = new_data; //Read received byte
+        I2C2STATbits.I2COV = 0; //Clear overflow flag
+
+        ok = i2c_master_wait_and_check(I2C_MOD2, 0); //Wait ack ends
+        if(!ok) return count;
+    }
+
+    //Close session sending stop condition
+    StopI2C2();
+    i2c_master_wait_and_check(I2C_MOD2, 0);
+
+    return count;
+}
+
 /**
  * Master I2C1 interrupt
  */
 void __attribute__((__interrupt__, auto_psv)) _MI2C1Interrupt(void)
 {
     MI2C1_Clear_Intr_Status_Bit;
+
+#ifdef _I2C_RTOS_WAIT
+#endif
+
+#ifdef _I2C_PWRS_WAIT
+#endif
+
+#ifdef _I2C_BUSY_WAIT
+#endif
+}
+
+/**
+ * Master I2C2 interrupt
+ */
+void __attribute__((__interrupt__, auto_psv)) _MI2C2Interrupt(void)
+{
+    MI2C2_Clear_Intr_Status_Bit;
 
 #ifdef _I2C_RTOS_WAIT
 #endif
@@ -403,30 +550,41 @@ void __attribute__((__interrupt__, auto_psv)) _SI2C1Interrupt(void)
 
     if(I2C1STATbits.D_A == 0)
     {
+//        printf("I2C1 INT ADDRESS\n");
         if(I2C1STATbits.R_W == 0) //Write
-            I2C_SLAVE_ST = I2C_SLV_ADDR;
+        {
+//            printf("    WRITE\n");
+            I2C1_SLAVE_ST = I2C_SLV_W_ADDR;
+        }
         else
-            I2C_SLAVE_ST = I2C_SLV_READ;
+        {
+//            printf("    READ\n");
+            I2C1_SLAVE_ST = I2C_SLV_READ;
+        }
         
         I2C1CONbits.SCLREL = 1;
         return;
     }
 
-    switch(I2C_SLAVE_ST)
+    switch(I2C1_SLAVE_ST)
     {
-        case I2C_SLV_ADDR:
-            i2c_slave_address = data;
-            I2C_SLAVE_ST = I2C_SLV_DATA;
+        case I2C_SLV_W_ADDR:
+//            printf("ADD %d\n", data);
+            i2c1_slave_address = data;
+            I2C1_SLAVE_ST = I2C_SLV_WRITE;
             break;
-        case I2C_SLV_DATA:
-            i2c_slave_putc(data);
-            i2c_slave_address++;
+        case I2C_SLV_WRITE:
+//            printf("WRT %d\n", data);
+            i2c1_slave_putc(data);
+            i2c1_slave_address++;
             break;
         case I2C_SLV_READ:
-            I2C1TRN = (unsigned int)i2c_slave_getc();
-            i2c_slave_address++;
+//            printf("READ %d\n", i2c1_slave_address);
+            I2C1TRN = (unsigned int)i2c1_slave_getc();
+            i2c1_slave_address++;
             break;
         default:
+//            printf("DEF\n");
             break;
     }
 
@@ -434,17 +592,72 @@ void __attribute__((__interrupt__, auto_psv)) _SI2C1Interrupt(void)
 }
 
 /**
+ * Slave I2C2 interrupt
+ */
+void __attribute__((__interrupt__, auto_psv)) _SI2C2Interrupt(void)
+{
+    SI2C2_Clear_Intr_Status_Bit;
+
+    I2C2STATbits.I2COV = 0;
+    char data = (char)I2C2RCV;
+
+    if(I2C2STATbits.D_A == 0)
+    {
+        if(I2C2STATbits.R_W == 0) //Write
+            I2C2_SLAVE_ST = I2C_SLV_W_ADDR;
+        else
+            I2C2_SLAVE_ST = I2C_SLV_READ;
+
+        I2C2CONbits.SCLREL = 1;
+        return;
+    }
+
+    switch(I2C2_SLAVE_ST)
+    {
+        case I2C_SLV_W_ADDR:
+            i2c2_slave_address = data;
+            I2C2_SLAVE_ST = I2C_SLV_WRITE;
+            break;
+        case I2C_SLV_WRITE:
+            i2c2_slave_putc(data);
+            i2c2_slave_address++;
+            break;
+        case I2C_SLV_READ:
+            I2C2TRN = (unsigned int)i2c2_slave_getc();
+            i2c2_slave_address++;
+            break;
+        default:
+            break;
+    }
+
+    I2C2CONbits.SCLREL = 1;
+}
+
+/**
  * Write a byte into slave device at @i2c_slave_address
  * @param data Byte to be write
  */
-static void i2c_slave_putc(char data)
+static void i2c1_slave_putc(char data)
 {
 #ifdef _I2C_SLAVE_RTOS
 #endif
     
 #ifdef _I2C_SLAVE_BUFF
-    if(i2c_slave_address < _I2C_RCV_BUFF_LEN)
-        I2C_BUFF[i2c_slave_address] = data;
+//    printf("I2C1 PUTC %c at %d\n", data, i2c1_slave_address);
+    if(i2c1_slave_address < _I2C1_RCV_BUFF_LEN)
+        I2C1_BUFF[i2c1_slave_address] = data;
+#endif
+}
+
+static void i2c2_slave_putc(char data)
+{
+#ifdef _I2C_SLAVE_RTOS
+#endif
+
+#ifdef _I2C_SLAVE_BUFF
+//    printf("I2C2 PUTC %c at %d\n", data, i2c2_slave_address);
+    if(i2c2_slave_address < _I2C2_RCV_BUFF_LEN)
+        I2C2_BUFF[i2c2_slave_address] = data;
 #endif
 }
 
@@ -452,16 +665,30 @@ static void i2c_slave_putc(char data)
  * Reads a byte from slave device
  * @return stored byte at @i2c_slave_address
  */
-static char i2c_slave_getc(void)
+static char i2c1_slave_getc(void)
 {
 #ifdef _I2C_SLAVE_RTOS
 #endif
 
 #ifdef _I2C_SLAVE_BUFF
-    if(i2c_slave_address < _I2C_RCV_BUFF_LEN)
-        return I2C_BUFF[i2c_slave_address];
+//    printf("I2C1 GETC %c from %d\n", I2C1_BUFF[i2c1_slave_address], i2c1_slave_address);
+    if(i2c1_slave_address < _I2C1_RCV_BUFF_LEN)
+        return I2C1_BUFF[i2c1_slave_address];
     else
         return 0;
 #endif
 }
 
+static char i2c2_slave_getc(void)
+{
+#ifdef _I2C_SLAVE_RTOS
+#endif
+
+#ifdef _I2C_SLAVE_BUFF
+//    printf("I2C2 GETC %c from %d\n", I2C2_BUFF[i2c2_slave_address], i2c2_slave_address);
+    if(i2c2_slave_address < _I2C2_RCV_BUFF_LEN)
+        return I2C2_BUFF[i2c2_slave_address];
+    else
+        return 0;
+#endif
+}

@@ -24,10 +24,11 @@
 /*---------------------------------
  *      I2C SLAVE STATUS TABLE
  *---------------------------------*/
-#define I2C_SLV_IDLE    0
-#define I2C_SLV_ADDR    1
-#define I2C_SLV_DATA    2
-#define I2C_SLV_READ    3
+#define I2C_SLV_IDLE        0
+#define I2C_SLV_W_ADDR      1
+#define I2C_SLV_R_ADDR      2
+#define I2C_SLV_WRITE       3
+#define I2C_SLV_READ        4
 
 /*---------------------------------
  *      I2C CLOCK RATES TABLE
@@ -42,5 +43,9 @@
 void i2c1_open(unsigned int BRG, char address);
 int i2c1_master_fputs(const char *data, int len, char *address, int addlen);
 int i2c1_master_fgets(char *data, int len, char *address, int addlen);
+
+void i2c2_open(unsigned int BRG, char address);
+int i2c2_master_fputs(const char *data, int len, char *address, int addlen);
+int i2c2_master_fgets(char *data, int len, char *address, int addlen);
 
 #endif
