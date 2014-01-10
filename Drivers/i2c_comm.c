@@ -18,7 +18,8 @@
  */
 
 #include "i2c_comm.h"
-#include "console_tasks.h"
+#include "FreeRTOS.h"
+#include "queue.h"
 
 //Static functions
 static void i2c_master_wait(int device);
@@ -41,20 +42,22 @@ static char i2c2_slave_getc(void);
 /**
  * Slave reception mode. Uncomment only one define statement
  */
-//#define _I2C_SLAVE_RTOS ///< Uses Queue to store slave recived data
-#define _I2C_SLAVE_BUFF ///< Uses buffer in ram to store recived data
+#define _I2C_SLAVE_RTOS ///< Uses Queue to store slave recived data
+//#define _I2C_SLAVE_BUFF ///< Uses buffer in ram to store recived data
 
 #ifdef _I2C_SLAVE_RTOS
+extern xQueueHandle i2cRxQueue;
 #endif
 
 #ifdef _I2C_SLAVE_BUFF
 #define _I2C1_RCV_BUFF_LEN   16  ///< Slave recive buffer lenght
 #define _I2C2_RCV_BUFF_LEN   16  ///< Slave recive buffer lenght
-int i2c1_slave_address = 0;      ///< Salve r/w selected address
-int i2c2_slave_address = 0;      ///< Salve r/w selected address
 char I2C1_BUFF[_I2C1_RCV_BUFF_LEN]; ///< Salve data buffer
 char I2C2_BUFF[_I2C2_RCV_BUFF_LEN]; ///< Salve data buffer
 #endif
+
+int i2c1_slave_address = 0;      ///< Salve r/w selected address
+int i2c2_slave_address = 0;      ///< Salve r/w selected address
 
 int I2C1_SLAVE_ST = I2C_SLV_IDLE;
 int I2C2_SLAVE_ST = I2C_SLV_IDLE;
@@ -640,6 +643,9 @@ void __attribute__((__interrupt__, auto_psv)) _SI2C2Interrupt(void)
 static void i2c1_slave_putc(char data)
 {
 #ifdef _I2C_SLAVE_RTOS
+    portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(i2cRxQueue, &data, &xHigherPriorityTaskWoken);
+//        portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 #endif
     
 #ifdef _I2C_SLAVE_BUFF
@@ -652,6 +658,9 @@ static void i2c1_slave_putc(char data)
 static void i2c2_slave_putc(char data)
 {
 #ifdef _I2C_SLAVE_RTOS
+    portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(i2cRxQueue, &data, &xHigherPriorityTaskWoken);
+//        portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 #endif
 
 #ifdef _I2C_SLAVE_BUFF
@@ -668,6 +677,7 @@ static void i2c2_slave_putc(char data)
 static char i2c1_slave_getc(void)
 {
 #ifdef _I2C_SLAVE_RTOS
+    return 0;
 #endif
 
 #ifdef _I2C_SLAVE_BUFF
@@ -682,6 +692,7 @@ static char i2c1_slave_getc(void)
 static char i2c2_slave_getc(void)
 {
 #ifdef _I2C_SLAVE_RTOS
+    return 0;
 #endif
 
 #ifdef _I2C_SLAVE_BUFF

@@ -81,6 +81,7 @@
 /* Global variables */
 xSemaphoreHandle dataRepositorySem, consolePrintfSem;
 xQueueHandle dispatcherQueue, executerCmdQueue, executerStatQueue;
+xQueueHandle i2cRxQueue;
 
 static void on_reset(void);
 static void csp_initialization(void);
@@ -91,6 +92,7 @@ int main(void)
 //    dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
 //    executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
 //    executerStatQueue = xQueueCreate(1,sizeof(int));
+    i2cRxQueue = xQueueCreate(100, sizeof(char));
 
     /* Initializing shared Semaphore */
     dataRepositorySem = xSemaphoreCreateMutex();
@@ -103,8 +105,9 @@ int main(void)
     csp_initialization();
 
     /* Crating all tasks */
-    xTaskCreate(taskServerCSP, (signed char *)"SRV", 5*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
-    xTaskCreate(taskClientCSP, (signed char *)"CLI", 5*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+    xTaskCreate(taskClientCSP, (signed char *)"CLI", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
+    xTaskCreate(taskRxI2C, (signed char *)"I2C", 2*configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 //    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
 //    xTaskCreate(taskExecuter, (signed char *)"executer", 1*configMINIMAL_STACK_SIZE, NULL, 4, NULL);
 //    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
@@ -170,6 +173,9 @@ void configure_ports(void)
     iPPSInput(IN_FN_PPS_U1RX,IN_PIN_PPS_RP10);
     // H1.18 - U1TX - RP17 - IO.6 - UART 1 PARA CONSOLA SERIAL
     iPPSOutput(OUT_PIN_PPS_RP17,OUT_FN_PPS_U1TX);
+
+    //JUST FOR TESTING
+    i2c2_open(37, 0xAB);
 }
 
 /**
@@ -194,10 +200,10 @@ static void csp_initialization(void)
 
     /* Init CSP with address MY_ADDRESS */
     csp_init(1);
-    csp_i2c_init(0xAA, 0, 100);
+    csp_i2c_init(0xAA, 0, 400);
 
     csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_i2c, CSP_NODE_MAC);
-    csp_route_start_task(100, 1);
+    csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);
 
     //DEBUG
     printf("Conn table\r\n");

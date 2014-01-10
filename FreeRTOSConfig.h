@@ -103,7 +103,7 @@ your application. */
 #define configTICK_RATE_HZ                      ( ( portTickType ) 100 )
 #define configMAX_PRIORITIES                    ( ( unsigned portBASE_TYPE ) 5 )
 #define configMINIMAL_STACK_SIZE                ( 115 ) /* Don't change (115 bytes Min) */
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 5600 )
+#define configTOTAL_HEAP_SIZE                   ( ( size_t ) 5800 )
 #define configMAX_TASK_NAME_LEN                 ( 8 )
 #define configUSE_TRACE_FACILITY                1
 #define configUSE_16_BIT_TICKS                  1
@@ -113,7 +113,7 @@ your application. */
 #define configUSE_COUNTING_SEMAPHORES           1
 #define configUSE_ALTERNATIVE_API               0 /* Deprecated */
 #define configQUEUE_REGISTRY_SIZE               6
-#define configUSE_QUEUE_SETS                    0
+#define configUSE_QUEUE_SETS                    1
 
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK                     1

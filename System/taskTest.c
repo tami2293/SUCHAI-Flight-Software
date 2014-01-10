@@ -4,6 +4,8 @@
 #include "csp_if_lo.h"
 #include "csp_thread.h"
 
+extern xQueueHandle i2cRxQueue;
+
 void taskTest(void *param)
 {
     const unsigned long Delayms = 500 / portTICK_RATE_MS;
@@ -19,58 +21,26 @@ void taskTest(void *param)
     }
 }
 
-int i2c__test_send()
-{
-//    if(handle != 0)
-//        return CSP_ERR_DRIVER;
-//
-//#ifdef SCH_GRL_VERBOSE
-//    //Some debug
-//    printf("To: %d. Size: %d. Data: ", frame->dest, frame->len);
-//    int i; for(i=0; i<frame->len; i++) printf("0x%X,", frame->data[i]); printf("\n");
-//#endif
-
-    char d_address[] = {I2C_EEPROM_ID, 0};
-    char test[10] = {9,1,9,1,9,5,6,7,8,9};
-    int d_address_len = 2; //Don't use register address, only device address
-
-    //Send frame via I2C1
-//    int total = i2c1_master_fputs((const char*)(frame->data), frame->len, d_address, d_address_len);
-    taskENTER_CRITICAL();
-    int total = i2c1_master_fputs(test, 10, d_address, d_address_len);
-    taskEXIT_CRITICAL();
-//    int total = frame->len;
-
-    if(total == 10)
-    {
-        printf("Success in I2C driver (%d of %d bytes transmited)\n", total, 10);
-        return E_NO_ERR;
-    }
-    else
-    {
-        printf("Error in I2C driver (%d of %d bytes transmited)\n", total, 10);
-        return CSP_ERR_DRIVER;
-    }
-}
-
 void taskClientCSP(void *param)
 {
-    const unsigned long Delayms = 000 / portTICK_RATE_MS;
+    const unsigned long Delayms = 10000 / portTICK_RATE_MS;
 //    int csp_node = *(int *)param;
 
     int pingResult = 0;
-    int len = 10;
+    int len = 6;
+
+    vTaskDelay(3000 / portTICK_RATE_MS);
 
     while(1)
     {
-        vTaskDelay(Delayms);
-
         printf("[CLI] Sending ping\n");
-//        pingResult = i2c__test_send();
-        pingResult = csp_ping(10, 3000, len, CSP_O_NONE);
+        pingResult = csp_ping(1, 3000, len, CSP_O_NONE);
+
         #if SCH_GRL_VERBOSE
             printf("Ping with payload of %d bytes, took %d ms\n", len, pingResult);
         #endif
+
+        vTaskDelay(Delayms);
     }
 }
 
@@ -114,5 +84,45 @@ void taskServerCSP(void *param)
         /* Close current connection, and handle next */
         csp_close(conn);
         printf("[SRV] Connection closed\n");
+    }
+}
+
+void taskRxI2C(void *param)
+{
+    int n_recv = 0;
+    uint8_t new_data = 0;
+    portBASE_TYPE result = pdFALSE;
+    i2c_frame_t *frame = (i2c_frame_t *) csp_buffer_get(100);
+
+    while(1)
+    {
+        result = xQueueReceive(i2cRxQueue, &new_data, 50/ portTICK_RATE_MS);
+
+        if(I2C2STATbits.P)
+        {
+            printf("P: %x\n", I2C2STATbits.P);
+        }
+        
+        //No more data received
+        if(result != pdPASS)
+        {
+            if(n_recv > 0)
+            {
+                printf("NEW\n");
+                frame->len = n_recv;
+                csp_i2c_rx(frame, NULL);
+                
+                n_recv = 0;
+                frame = (i2c_frame_t *) csp_buffer_get(100);
+                frame->len = 0;
+            }
+        }
+        //New data received
+        else
+        {
+//            printf("DATA: %c\n", new_data);
+            frame->data[n_recv] = new_data;
+            n_recv++;
+        }
     }
 }

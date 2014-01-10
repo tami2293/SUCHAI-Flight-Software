@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /**
  * Maximum transfer length on I2C
  */
-#define I2C_MTU 	256
+#define I2C_MTU 	128
 
 /**
  * I2C device modes

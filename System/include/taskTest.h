@@ -15,6 +15,7 @@
 void taskTest(void *param);
 void taskClientCSP(void *param);
 void taskServerCSP(void *param);
+void taskRxI2C(void *param);
 
 #endif
 
