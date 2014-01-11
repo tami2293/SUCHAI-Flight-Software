@@ -20,15 +20,20 @@
 
 #if defined(__XC16__)
     #include <xc.h>
+
+#include "taskConsole.h"
 #else
     #include <p24FJ256GA110.h>
 #endif
 
 #include <stdio.h>
 #include <PPS.h>
+#include <timer.h>
+#include <uart.h>
 
 /* Drivers includes */
 #include "i2c_comm.h"
+#include "rs232_suchai.h"
 
 /* System includes */
 #include "SUCHAI_config.h"
@@ -89,9 +94,6 @@ static void csp_initialization(void);
 int main(void)
 {
     /* Initializing shared Queues */
-//    dispatcherQueue = xQueueCreate(25,sizeof(DispCmd));
-//    executerCmdQueue = xQueueCreate(1,sizeof(ExeCmd));
-//    executerStatQueue = xQueueCreate(1,sizeof(int));
     i2cRxQueue = xQueueCreate(100, sizeof(char));
 
     /* Initializing shared Semaphore */
@@ -106,11 +108,8 @@ int main(void)
 
     /* Crating all tasks */
     xTaskCreate(taskServerCSP, (signed char *)"SRV", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-    xTaskCreate(taskClientCSP, (signed char *)"CLI", 3*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-    xTaskCreate(taskRxI2C, (signed char *)"I2C", 2*configMINIMAL_STACK_SIZE, NULL, 1, NULL);
-//    xTaskCreate(taskDispatcher, (signed char *)"dispatcher", 2*configMINIMAL_STACK_SIZE, NULL, 3, NULL);
-//    xTaskCreate(taskExecuter, (signed char *)"executer", 1*configMINIMAL_STACK_SIZE, NULL, 4, NULL);
-//    xTaskCreate(taskHouskeeping, (signed char *)"housekeeping", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
+    xTaskCreate(taskConsole, (signed char *)"CON", 2*configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(taskRxI2C, (signed char *)"I2C", 2*configMINIMAL_STACK_SIZE, NULL, 2, NULL);
 
 
 //    xTaskCreate(taskTest, (signed char*)"taskTest", configMINIMAL_STACK_SIZE, (void *)"T1 Running...", 1, NULL);
@@ -175,7 +174,7 @@ void configure_ports(void)
     iPPSOutput(OUT_PIN_PPS_RP17,OUT_FN_PPS_U1TX);
 
     //JUST FOR TESTING
-    i2c2_open(37, 0xAB);
+//    i2c2_open(37, 0xAB);
 }
 
 /**
@@ -187,10 +186,18 @@ void on_reset(void)
     repo_onResetCmdRepo(); //Command repository initialization
     dat_onResetCubesatVar(); //Update status repository
 
+    /* Configure PPS and MB ports */
+    configure_ports();
+
     /* UART1 - CONSOLE - 19200, 8, N, 1 */
     ConfigRS232(51, RS2_M_UART1);
     EnableIntU1RX;
     SetPriorityIntU1RX(5);
+
+//    /* Configure Timer 2 for console */
+//    ConfigIntTimer2(T2_INT_PRIOR_6 & T2_INT_ON);
+//    OpenTimer2(T2_ON & T2_IDLE_CON & T2_GATE_OFF & T2_PS_1_64 & T2_SOURCE_INT, 25000); /* t[s]=X*ps/fcy => X=100ms*16MIPS/64.0 = 25000 */
+//    WriteTimer2(0);
 }
 
 static void csp_initialization(void)
@@ -206,11 +213,11 @@ static void csp_initialization(void)
     csp_route_start_task(2*configMINIMAL_STACK_SIZE, 2);
 
     //DEBUG
-    printf("Conn table\r\n");
+    printf("\n---- Conn table ----\n");
     csp_conn_print_table();
-    printf("Route table\r\n");
+    printf("---- Route table ----\n");
     csp_route_print_table();
-    printf("Interfaces\r\n");
+    printf("---- Interfaces ----\n");
     csp_route_print_interfaces();
 }
 
@@ -227,7 +234,7 @@ void    mon_putc(char ch);
 int __attribute__((__weak__, __section__(".libc")))
 write(int handle, void * buffer, unsigned int len)
 {
-    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
+//    xSemaphoreTake(consolePrintfSem, portMAX_DELAY);
     int i = 0;
     switch (handle)
     {
@@ -237,7 +244,7 @@ write(int handle, void * buffer, unsigned int len)
                 mon_putc(((char*)buffer)[i++]);
             break;
     }
-    xSemaphoreGive(consolePrintfSem);
+//    xSemaphoreGive(consolePrintfSem);
     return (len);  // number of characters written
 }
 

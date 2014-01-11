@@ -19,6 +19,7 @@
  */
 
 #include "console.h"
+#include "csp.h"
 extern xSemaphoreHandle consolePrintfSem;
 
 
@@ -56,7 +57,7 @@ BOOL con_cmd_toolong_flag;
  * Arguments          : void
  * Return Value       : void
  *----------------------------------------------------------------------------*/
-DispCmd con_cmd_handler(void)
+int con_cmd_handler(void)
 {
     DispCmd newCmd;
     newCmd.idOrig = CMD_IDORIG_TCONSOLE;
@@ -67,82 +68,95 @@ DispCmd con_cmd_handler(void)
     if(con_entry_flag && con_entry_index > 0 )
     {
         con_cmd_from_entry(con_entry);
+        printf("\n");
 
         if(con_arg_toolong)
         {
-            newCmd.cmdId = con_id_error_invalid_arg;
+            con_error_invalid_arg(NULL);
             con_arg_toolong = FALSE;
             con_entry_flag = FALSE;
 
-            return newCmd;
+            return 0;
         }
         
-        /* ------------ OTHERS COMMANDS ---------------*/
-        if(strcmp(con_cmd, "exe_cmd") == 0)
+        //ping <node> <len> <tout>
+        if(strcmp(con_cmd, "ping") == 0)
         {
-            int cmd, param;
-            char* end;
+            int node, len, tout;
 
             switch(con_arg_count)
             {
-               case 2:
-                  cmd=(unsigned int)strtoul(con_args[0], &end, 0);
-                  param = atoi(con_args[1]);
+               case 3:
+                  node = atoi(con_args[0]);
+                  len = atoi(con_args[1]);
+                  tout = atoi(con_args[2]);
 
-                  newCmd.cmdId=cmd;
-                  newCmd.param = param;        /* Argument to the command */
+                  csp_ping((uint8_t)node, 10000, (unsigned int)len, CSP_O_NONE);
                   break;
+                  
               default:
-                  newCmd.cmdId = con_id_error_count_arg;  /* con_error_count_arg */
+                  con_error_count_arg(NULL);  /* con_error_count_arg */
               break;
            }
+            
            con_arg_toolong = FALSE;
            con_entry_flag = FALSE;
-           return newCmd;
+           return 1;
         }
 
-       /* ------------ PPC COMMANDS ---------------*/
-        if(strcmp(con_cmd, "obc_reset") == 0){
+        //send <texto>
+        if(strcmp(con_cmd, "send") == 0)
+        {
+            int len;
+            static char in_buf[10];
+            
             switch(con_arg_count){
-                case 0:
-                    newCmd.cmdId= obc_id_reset;
+                case 1:
+                    len = strlen(con_args[0]);
+                    csp_transaction(1, 10, 10, 10000, con_args[0], len, in_buf, 0);
                     break;
                 default:
-                    newCmd.cmdId = con_id_error_count_arg;
+                    con_error_count_arg(NULL);
                     break;
             }
 
             con_arg_toolong = FALSE;
             con_entry_flag = FALSE;
-            return newCmd;
+            return 1;
         }
-   
 
-       /* ------------ RTC COMMANDS ---------------*/
-       if(strcmp(con_cmd, "rtc_print") == 0)
-       {
-           if(con_arg_count == 0)
-           {
-//               newCmd.cmdId = rtc_id_print; //Adjust seconds
-               newCmd.param = 1;
-           }
-           else
-           {
-               newCmd.cmdId = con_id_error_count_arg;
-           }
+        //sendto <node> <port> <texto>
+        if(strcmp(con_cmd, "sendto") == 0)
+        {
+            int node, port, len;
+            static char in_buf[10];
+            
+            switch(con_arg_count){
+                case 3:
+                    node = atoi(con_args[0]);
+                    port = atoi(con_args[1]);
+                    len = strlen(con_args[2]);
 
-           con_arg_toolong = FALSE;
-           con_entry_flag = FALSE;
+                    csp_transaction(1, node, port, 10000, con_args[2], len, in_buf, 0);
+                    break;
 
-           return newCmd;
-       }
+                default:
+                    con_error_count_arg(NULL);
+                    break;
+            }
+
+            con_arg_toolong = FALSE;
+            con_entry_flag = FALSE;
+            return 1;
+        }
+  
 
        /* ------ To get here the cmd has to fail all the comparisons  ------*/
-       newCmd.cmdId = con_id_error_unknown_cmd; /* con_error_unknown_cmd */
+       con_error_unknown_cmd(NULL); /* con_error_unknown_cmd */
 
     }else
         if(con_cmd_toolong_flag){
-            newCmd.cmdId = con_id_error_cmd_toolong;
+            con_error_cmd_toolong(NULL);
 
             con_cmd_toolong_flag = FALSE;
         }
@@ -150,7 +164,7 @@ DispCmd con_cmd_handler(void)
     con_arg_toolong = FALSE;
     con_entry_flag = FALSE;
 
-    return newCmd;
+    return 0;
 }
 
 /*------------------------------------------------------------------------------
@@ -200,9 +214,9 @@ void con_char_handler(char newchar){
         case 0x08:      //Backspace
             if(con_buf_index>=2 && !con_escape_flag){
                 con_buf_index -= 2; //Erase last char
-                con_putc(&newchar);
-                con_putc(" ");
-                con_putc(&newchar);
+                con_putc(newchar);
+                con_putc(' ');
+                con_putc(newchar);
             }else{
                 con_buf_index = 0;
             }
@@ -260,7 +274,7 @@ void con_char_handler(char newchar){
                 }
             }
             else{
-                con_putc(&newchar);
+                con_putc(newchar);
             }
             break;
     }
@@ -384,7 +398,7 @@ void con_printf(char* c)
  *----------------------------------------------------------------------------*/
 void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt(void)
 {
-    con_newchar = con_getc();
+    con_newchar = (char) getcUART1();
 
     if(con_active)
     con_char_handler(con_newchar);

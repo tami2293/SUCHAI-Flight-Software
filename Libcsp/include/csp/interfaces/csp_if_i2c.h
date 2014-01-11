@@ -40,6 +40,7 @@ extern csp_iface_t csp_if_i2c;
  * @return csp_error.h code
  */
 int csp_i2c_init(uint8_t opt_addr, int handle, int speed);
+//void csp_i2c_rx(i2c_frame_t * frame, void * pxTaskWoken);
 
 #ifdef __cplusplus
 } /* extern "C" */

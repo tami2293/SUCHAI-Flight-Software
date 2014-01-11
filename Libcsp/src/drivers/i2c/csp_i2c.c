@@ -46,8 +46,8 @@ int i2c_send(int handle, i2c_frame_t * frame, uint16_t timeout)
     int i; for(i=0; i<frame->len; i++) printf("0x%X,", frame->data[i]); printf("\n");
 #endif
 
-//    char d_address[] = {I2C_EEPROM_ID, 0};
-    char d_address[] = {0xAB, 0};
+    char d_address[] = {I2C_EEPROM_ID, 0};
+//    char d_address[] = {0xAB, 0};
     int d_address_len = 2; //Don't use register address, only device address
 
     //Send frame via I2C1

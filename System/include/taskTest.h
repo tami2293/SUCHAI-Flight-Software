@@ -12,7 +12,6 @@
 #include "csp_if_i2c.h"
 #include "csp_i2c.h"
 
-void taskTest(void *param);
 void taskClientCSP(void *param);
 void taskServerCSP(void *param);
 void taskRxI2C(void *param);

@@ -22,10 +22,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <uart.h>
 
-#include "rs232_suchai.h"
 #include "DebugIncludes.h"  //para con_printf
-
 #include "cmdRepository.h"
 
 #define CON_BUF_WIDTH 32
@@ -36,7 +35,7 @@
 void con_init(void);
 void con_char_handler(char newchar);
 void con_cmd_from_entry(char *entry);
-DispCmd con_cmd_handler(void);
+int con_cmd_handler(void);
 
 BOOL con_set_active(BOOL on_off);
 BOOL StrIsInt(char *str);

@@ -38,18 +38,19 @@ ______________________________________________________________________________\n
 void taskConsole(void *param)
 {
 #if (SCH_GRL_VERBOSE)
-    con_printf(">>[Console] Started\r\n");
+    con_printf("[Console] Started\n");
     char ret[10];
 #endif
 
     const unsigned int Delayms = 250 / portTICK_RATE_MS;
-    DispCmd NewCmd;
-    NewCmd.idOrig = CMD_IDORIG_TCONSOLE; /* Consola */
-    NewCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
-    NewCmd.param = 0;
+//    DispCmd NewCmd;
+//    NewCmd.idOrig = CMD_IDORIG_TCONSOLE; /* Consola */
+//    NewCmd.cmdId = CMD_CMDNULL;  /* cmdNULL */
+//    NewCmd.param = 0;
 
     /* Initializing console */
     con_init();
+    int cmd = 0;
 
 #if (SCH_GRL_VERBOSE>=1)
     con_printf((char *)console_baner);
@@ -60,22 +61,22 @@ void taskConsole(void *param)
         vTaskDelay(Delayms);
 
         /* Parsing command - return CmdDisp structure*/
-        NewCmd = con_cmd_handler();
+        cmd = con_cmd_handler();
 
-        /* cmdId = 0xFFFF means no new command */
-        if(NewCmd.cmdId != CMD_CMDNULL)
-        {
-            con_printf("\r\n");
-
-            #if (SCH_GRL_VERBOSE >=1)
-                /* Print the command code */
-                sprintf( ret, "0x%X", (unsigned int)NewCmd.cmdId );
-                con_printf("[Console] Se genera comando: ");
-                con_printf(ret); con_printf("\n\0");
-            #endif
-
-            /* Queue NewCmd - Blocking */
-            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
-        }        
+//        /* cmdId = 0xFFFF means no new command */
+//        if(NewCmd.cmdId != CMD_CMDNULL)
+//        {
+//            con_printf("\r\n");
+//
+//            #if (SCH_GRL_VERBOSE >=1)
+//                /* Print the command code */
+//                sprintf( ret, "0x%X", (unsigned int)NewCmd.cmdId );
+//                con_printf("[Console] Se genera comando: ");
+//                con_printf(ret); con_printf("\n\0");
+//            #endif
+//
+//            /* Queue NewCmd - Blocking */
+//            xQueueSend(dispatcherQueue, &NewCmd, portMAX_DELAY);
+//        }
     }
 }
