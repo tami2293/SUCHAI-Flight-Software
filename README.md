@@ -5,7 +5,7 @@ Nanosatellite Flight Software
 
 Key Features:
 * Designed for medium-range microcontrollers, as Microchip PIC24.
-* Low memory foot print
+* Low memory footprint
 * Highly extensible command processor architecture
 * Powered by FreeRTOS
 
