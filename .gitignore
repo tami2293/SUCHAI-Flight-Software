@@ -32,3 +32,10 @@
 *.dSYM/
 *.su
 /SUCHAI.X/dist/Sim/
+
+CMakeFiles
+cmake_*
+SUCHAI_Flight_Software*
+CMakeCache.txt
+.idea
+cmake-build-debug/
