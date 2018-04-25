@@ -22,80 +22,38 @@
 static const char *tag = "Communications";
 
 static void com_receive_tc(csp_packet_t *packet);
-static void com_receive_cmd(csp_packet_t *packet);
+static void com_receive_cmd(char *buff, size_t len);
 
 void taskCommunications(void *param)
 {
     LOGD(tag, "Started");
     int rc;
 
-    /* Pointer to current connection, packet and socket */
-    csp_conn_t *conn;
-    csp_packet_t *packet;
-    csp_packet_t *response;
+    // Create and connect to SUB socket
+    void *context = zmq_ctx_new();
+    void *socket = zmq_socket(context, ZMQ_SUB);
+    assert(socket != NULL);
+    rc = zmq_connect(socket, SCH_COMM_ZMQ_IN);
+    assert (rc == 0);
+    char addr = (char) SCH_COMM_ADDRESS;
+    rc = zmq_setsockopt(socket, ZMQ_SUBSCRIBE, &addr, 1);
+    assert (rc == 0);
 
-    csp_socket_t *sock = csp_socket(CSP_SO_NONE);
-    if((rc = csp_bind(sock, CSP_ANY)) != CSP_ERR_NONE)
-    {
-        LOGE(tag, "Error biding socket (%d)!", rc)
-        return;
-    }
-    if((rc = csp_listen(sock, 5)) != CSP_ERR_NONE)
-    {
-        LOGE(tag, "Error listening to socket (%d)", rc)
-        return;
-    }
-
-    response = csp_buffer_get(sizeof(csp_packet_t) + 3);
-    if( response == NULL ) {
-        LOGE(stderr, "Could not allocate memory for response packet!\n");
-        return;
-    }
-    memcpy(response->data, "OK", 3);
-    response->length = 4;
+    char buff[SCH_BUFF_MAX_LEN];
+    memset(buff, '\0', SCH_BUFF_MAX_LEN);
 
     while(1)
     {
-        /* CSP SERVER */
-        /* Wait for connection, 1000 ms timeout */
-        if((conn = csp_accept(sock, 1000)) == NULL)
-            continue; /* Try again later */
-
-        /* Read packets. Timeout is 500 ms */
-        while ((packet = csp_read(conn, 500)) != NULL)
+        /* ZMQ SERVER */
+        if((rc = zmq_recv(socket, buff, SCH_BUFF_MAX_LEN, 0)) != -1)
         {
-            switch (csp_conn_dport(conn))
-            {
-                case SCH_TRX_PORT_TC:
-                    /* Process incoming TC */
-                    com_receive_tc(packet);
-                    csp_buffer_free(packet);
-                    csp_send(conn, response, 1000);
-                    break;
+            /* Parse commands */
+            if(rc > 0)
+                com_receive_cmd(buff+1, (size_t)(rc-1));
 
-                case SCH_TRX_PORT_DEBUG:
-                    /* Debug port, only to print strings */
-                    LOGI(tag, (char *)(packet->data));
-                    csp_buffer_free(packet);
-                    csp_send(conn, response, 1000);
-                    break;
-
-                case SCH_TRX_PORT_CONSOLE:
-                    /* Debug port, executes console commands */
-                    com_receive_cmd(packet);
-                    csp_buffer_free(packet);
-                    csp_send(conn, response, 1000);
-                    break;
-
-                default:
-                    /* Let the service handler reply pings, buffer use, etc. */
-                    csp_service_handler(conn, packet);
-                    break;
-            }
+            /* Clear buffer */
+            memset(buff, '\0', SCH_BUFF_MAX_LEN);
         }
-
-        /* Close current connection, and handle next */
-        csp_close(conn);
     }
 }
 
@@ -145,11 +103,41 @@ static void com_receive_tc(csp_packet_t *packet)
 
 /**
  * Parse tc frame as console commands
- * @note NOT IMPLEMENTED YET
- * @param packet TC Buffer
+ * @param buff command string buffer
+ * @param len string length
  */
-static void com_receive_cmd(csp_packet_t *packet)
+static void com_receive_cmd(char *buff, size_t len)
 {
-    /* FIXME: Not implemented */
-    LOGW(tag, "com_receive_cmd NOT implemented! (%s)", (char *)(packet->data))
+    int next;
+    int n_args;
+    cmd_t *new_cmd;
+    char tmp_cmd[len];
+    char tmp_arg[len];
+    memset(tmp_cmd, '\0', len);
+    memset(tmp_arg, '\0', len);
+    LOGI(tag, "New TC: %s (%d)", buff, (int)len);
+
+    n_args = sscanf(buff, "%s %n", tmp_cmd, &next);
+    LOGV(tag, "Parsed %d: %s (%d)", n_args, tmp_cmd, next);
+
+    if(n_args)
+    {
+        new_cmd = cmd_get_str(tmp_cmd);
+        if (new_cmd)
+        {
+            n_args = next < len ? 1 : 0;
+            if(n_args)
+            {
+                strncpy(tmp_arg, buff + next, len - next);
+                LOGV(tag, "Parsed args: %s", tmp_arg);
+                cmd_add_params_str(new_cmd, tmp_arg);
+            }
+            else
+            {
+                cmd_add_params_str(new_cmd, "");
+            }
+
+            cmd_send(new_cmd);
+        }
+    }
 }

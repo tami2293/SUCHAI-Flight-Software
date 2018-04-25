@@ -14,11 +14,9 @@
 #define T_COMMUNICATIONS_H
 
 #include "stdlib.h"
+#include "zmq.h"
 
 #include "os.h"
-#include "csp/csp.h"
-#include "csp/csp_types.h"
-
 #include "config.h"
 #include "globals.h"
 

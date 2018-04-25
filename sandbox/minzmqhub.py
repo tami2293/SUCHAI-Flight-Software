@@ -26,38 +26,39 @@ def monitor(port="8003"):
     # Print all messages received in the socket
     while True:
         frame = sock.recv_multipart()[0]
-        # header = ["{:08b}".format(i) for i in frame[1:5]]
+        # # header = ["{:08b}".format(i) for i in frame[1:5]]
+        # # print(header)
+        # header = ["{:08b}".format(i) for i in frame[1:5]][::-1]
         # print(header)
-        header = ["{:08b}".format(i) for i in frame[1:5]][::-1]
-        print(header)
-        header_a = ["{:02x}".format(i) for i in frame[1:5]]
-        # print(header)
-        header = "0x"+"".join(header_a[::-1])
-        data = frame[5:]
-        try:
-            csp_header = parse_csp(header)
-        except:
-            csp_header = ""
+        # header_a = ["{:02x}".format(i) for i in frame[1:5]]
+        # # print(header)
+        # header = "0x"+"".join(header_a[::-1])
+        # data = frame[5:]
+        # try:
+        #     csp_header = parse_csp(header)
+        # except:
+        #     csp_header = ""
         print('MON:', frame)
-        print('Header: {},'.format(csp_header), "Data: {}".format(data))
+        # print('Header: {},'.format(csp_header), "Data: {}".format(data))
 
 def console(port="8001"):
-    import re
+    # import re
     ctx = zmq.Context(1)
     sock = ctx.socket(zmq.PUB)
     sock.connect('tcp://localhost:{}'.format(port))
+
     #          Prio  SRC   DST     DP     SP   RES HXRC
-    header = "{:02b}{:05b}{:05b}{:06b}{:06b}00000000"
+    # header = "{:02b}{:05b}{:05b}{:06b}{:06b}00000000"
     while True:
         cmd = input("console >> ").split(" ", 1)
         dst, data = int(cmd[0]), cmd[1]
-        hdr = header.format(1, 11, dst, 1, 1)
-        #print(hdr, data)
-        print(parse_csp(hex(int(hdr, 2))), data)
-        hdr_b = re.findall("........",hdr)[::-1]
-        print(hdr_b)
-        hdr = "".join([chr(int(i,2)) for i in hdr_b])
-        msg = chr(dst) + hdr + (data)
+    #     hdr = header.format(1, 11, dst, 1, 1)
+    #     #print(hdr, data)
+    #     print(parse_csp(hex(int(hdr, 2))), data)
+    #     hdr_b = re.findall("........",hdr)[::-1]
+    #     print(hdr_b)
+    #     hdr = "".join([chr(int(i,2)) for i in hdr_b])
+        msg = chr(dst) + (data)
         msg = msg.encode("ascii", "replace")
         print(msg)
         sock.send(msg)
@@ -94,10 +95,10 @@ if __name__ == "__main__":
         mon_th = Thread(target=monitor, args=(args.mon_port,))
         mon_th.start()
 
-    # if args.con:
-    #     # Create a console socket
-    #     con_th = Thread(target=console, args=(args.in_port, ))
-    #     con_th.start()
+    if args.con:
+        # Create a console socket
+        con_th = Thread(target=console, args=(args.in_port, ))
+        con_th.start()
 
     # Start ZMQ proxy (blocking)
     zmq.proxy(xpub_out, xsub_in, s_mon)

@@ -37,7 +37,7 @@ void on_reset(void)
     sigaction(SIGINT, &act, NULL);  // Register CTR+C signal handler
     sigaction(SIGTERM, &act, NULL);
 
-#if SCH_COMM_ENABLE
+#if 0 //SCH_COMM_ENABLE
     /* Init communications */
     LOGI(tag, "Initialising CSP...");
     /* Init buffer system with 5 packets of maximum 300 bytes each */
@@ -47,8 +47,16 @@ void on_reset(void)
     /* Start router task with 500 word stack, OS task priority 1 */
     csp_route_start_task(500, 1);
 
+    csp_debug_set_level(1, 1);
+    csp_debug_set_level(2, 1);
+    csp_debug_set_level(3, 1);
+    csp_debug_set_level(4, 1);
+    csp_debug_set_level(5, 1);
+    csp_debug_set_level(6, 1);
+
     /* Set ZMQ interface */
     #ifdef LINUX
+        LOGV(tag, "Set ZMQ interface...");
         csp_zmqhub_init_w_endpoints(255, SCH_COMM_ZMQ_OUT, SCH_COMM_ZMQ_IN);
         csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_zmqhub, CSP_NODE_MAC);
     #endif
