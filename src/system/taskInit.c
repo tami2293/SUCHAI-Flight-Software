@@ -71,6 +71,7 @@ void taskInit(void *param)
 #if SCH_COMM_ENABLE
     //FIXME: Init_communications is found in init.c and taskInit.c
     //init_communications();
+    zmq_context = zmq_ctx_new();  // Initialize ZMQ context
     osCreateTask(taskCommunications, "comm", task_memory, NULL, 2, &(thread_id[2]));
 #endif
 #if SCH_FP_ENABLED

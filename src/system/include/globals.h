@@ -14,4 +14,6 @@ osQueue executer_stat_queue;  /* Executer result queue */
 osSemaphore repo_data_sem;    /* Data repository mutex */
 osSemaphore repo_cmd_sem;     /* Command repository mutex */
 
+void *zmq_context;            /* ZMQ context */
+
 #endif //GLOBALS_H

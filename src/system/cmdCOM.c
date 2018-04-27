@@ -20,6 +20,7 @@
 #include "cmdCOM.h"
 
 static const char *tag = "cmdCOM";
+static int com_send_data(char node, char *data, size_t len);
 
 void cmd_com_init(void)
 {
@@ -48,11 +49,9 @@ int com_send_dbg(char *fmt, char *params, int nparams)
 
     if(sscanf(params, fmt, &node, msg) == nparams)
     {
-        /* Sending message to node debug port */
-        int rc = csp_transaction(1, (uint8_t)node, SCH_TRX_PORT_DEBUG, 1000,
-                                 (void *)msg, strlen(msg),
-                                 (void *)msg, strlen(msg));
-        LOGV(tag, "Sending %s to %d. Bytes read %d\n", msg, node, rc);
+        /* Sending message to node */
+        int rc = com_send_data((char)node, (void *)msg, strlen(msg));
+        LOGV(tag, "Sending %s (%d) to %d. Bytes sent %d\n", msg, (int)strlen(msg), node, rc);
 
         if(rc >= 0)
             return CMD_OK;
@@ -65,7 +64,7 @@ int com_send_cmd(char *fmt, char *params, int nparams)
     int node, next, n_args;
     char msg[CMD_MAX_STR_PARAMS];
 
-    n_args = sscanf(params, "%d %n", &node, &next);
+    n_args = sscanf(params, fmt, &node, &next);
 
     if(n_args == nparams && next > 1)
     {
@@ -83,4 +82,35 @@ int com_send_cmd(char *fmt, char *params, int nparams)
             return CMD_OK;
     }
     return CMD_FAIL;
+}
+
+/**
+ * Send data @len bytes of @data buffer to @node
+ * @param node int node id
+ * @param data char * data buffer
+ * @param len size_t data len
+ * @return
+ */
+static int com_send_data(char node, char *data, size_t len)
+{
+    /* Create socket */
+    assert(zmq_context != NULL);
+    void *socket = zmq_socket(zmq_context, ZMQ_PUB);
+    assert(socket != NULL);
+    int rc = zmq_connect(socket, SCH_COMM_ZMQ_OUT);
+    assert(rc == 0);
+
+    /* Creating a ZMQ message [NODE(1)][      DATA (255)    ] */
+    char msg[SCH_COM_MAX_LEN+1];
+    assert(msg != NULL);
+    memset(msg, '\0', SCH_COM_MAX_LEN+1);
+    /* Copy Node and Data to message */
+    assert(len <= SCH_COM_MAX_LEN);
+    msg[0] = node;
+    memcpy(msg+1, data, len);
+    LOGV(tag, "%s", msg);
+    /* Send message */
+    rc = zmq_send(socket, msg, SCH_COM_MAX_LEN+1, 0);
+    assert(rc > 0);
+//    free(msg);
 }

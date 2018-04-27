@@ -28,10 +28,10 @@ void taskHousekeeping(void *param)
 
     portTick delay_ms    = 1000;            //Task period in [ms]
 
-    unsigned int elapsed_sec = 0;           // Seconds counter
-    unsigned int _10sec_check = 10;     //10[s] condition
-    unsigned int _10min_check = 10*60;  //10[m] condition
-    unsigned int _1hour_check = 60*60;  //01[h] condition
+    unsigned int elapsed_sec = 0;       // Seconds counter
+    unsigned int _10sec_check = 10;     // 10[s] condition
+    unsigned int _10min_check = 10*60;  // 10[m] condition
+    unsigned int _1hour_check = 60*60;  // 01[h] condition
 
     portTick xLastWakeTime = osTaskGetTickCount();
     
@@ -41,35 +41,36 @@ void taskHousekeeping(void *param)
         osTaskDelayUntil(&xLastWakeTime, delay_ms); //Suspend task
         elapsed_sec += delay_ms/1000; //Update seconds counts
 
-        // Debug command
-        cmd_t *cmd_dbg = cmd_get_str("debug_obc");
-        cmd_add_params_var(cmd_dbg, 0);
-        cmd_send(cmd_dbg);
+        // 1 seconds action
+//        cmd_t *cmd_dbg = cmd_get_str("debug_obc");
+//        cmd_add_params_var(cmd_dbg, 0);
+//        cmd_send(cmd_dbg);
 
-        if((elapsed_sec % 2) == 0)
-        {
-            cmd_t *cmd_2s = cmd_get_str("sample_obc_sensors");
-            cmd_send(cmd_2s);
-        }
+        // 2 seconds actions
+//        if((elapsed_sec % 2) == 0)
+//        {
+//            cmd_t *cmd_2s = cmd_get_str("sample_obc_sensors");
+//            cmd_send(cmd_2s);
+//        }
 
         /* 10 seconds actions */
-        if((elapsed_sec % _10sec_check) == 0)
-        {
-            LOGD(tag, "10 sec tasks");
-            //cmd_t *cmd_10s = cmd_get_str("get_mem");
-            cmd_t *cmd_10s = cmd_get_str("test");
-            cmd_add_params_var(cmd_10s, "Task housekeeping running");
-            cmd_send(cmd_10s);
-        }
+//        if((elapsed_sec % _10sec_check) == 0)
+//        {
+//            LOGD(tag, "10 sec tasks");
+//            //cmd_t *cmd_10s = cmd_get_str("get_mem");
+//            cmd_t *cmd_10s = cmd_get_str("test");
+//            cmd_add_params_var(cmd_10s, "Task housekeeping running");
+//            cmd_send(cmd_10s);
+//        }
 
         /* 10 minutes actions */
-        if((elapsed_sec % _10min_check) == 0)
-        {
-            LOGD(tag, "10 min tasks");
-            cmd_t *cmd_10m = cmd_get_str("get_mem");
-            cmd_add_params_var(cmd_10m, 0);
-            cmd_send(cmd_10m);
-        }
+//        if((elapsed_sec % _10min_check) == 0)
+//        {
+//            LOGD(tag, "10 min tasks");
+//            cmd_t *cmd_10m = cmd_get_str("get_mem");
+//            cmd_add_params_var(cmd_10m, 0);
+//            cmd_send(cmd_10m);
+//        }
 
         /* 1 hours actions */
         if((elapsed_sec % _1hour_check) == 0)

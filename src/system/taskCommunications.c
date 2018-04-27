@@ -30,8 +30,8 @@ void taskCommunications(void *param)
     int rc;
 
     // Create and connect to SUB socket
-    void *context = zmq_ctx_new();
-    void *socket = zmq_socket(context, ZMQ_SUB);
+    assert(zmq_context != NULL);
+    void *socket = zmq_socket(zmq_context, ZMQ_SUB);
     assert(socket != NULL);
     rc = zmq_connect(socket, SCH_COMM_ZMQ_IN);
     assert (rc == 0);

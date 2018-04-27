@@ -15,8 +15,11 @@
 #include "stdint.h"
 
 #include "csp/csp.h"
+#include "zmq.h"
 
 #include "repoCommand.h"
+
+#define SCH_COM_MAX_LEN (255)
 
 /**
  * Registers communications commands in the system
