@@ -225,6 +225,8 @@ int cmd_repo_init(void)
     cmd_fp_init();
 #endif
 
+    cmd_weather_init();
+
     return CMD_OK;
 }
 

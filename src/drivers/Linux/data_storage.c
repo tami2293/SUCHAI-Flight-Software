@@ -386,3 +386,153 @@ static int dummy_callback(void *data, int argc, char **argv, char **names)
 {
     return 0;
 }
+
+// Baloon weather functions
+
+int storage_table_weather_init(char* table, int drop)
+{
+    char *err_msg;
+    char *sql;
+    int rc;
+
+    if(drop)
+    {
+        sql = sqlite3_mprintf("DROP TABLE %s", table);
+        rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+
+        if (rc != SQLITE_OK )
+        {
+            LOGE(tag, "Failed to drop table %s. Error: %s. SQL: %s", table, err_msg, sql);
+            sqlite3_free(err_msg);
+            sqlite3_free(sql);
+            return -1;
+        }
+        else
+        {
+            LOGD(tag, "Table %s drop successfully", table);
+            sqlite3_free(sql);
+        }
+    }
+    else
+    {
+        sql = sqlite3_mprintf("CREATE TABLE IF NOT EXISTS %s("
+                                      "idx INTEGER PRIMARY KEY, "
+                                      "date_time TEXT,"
+                                      "temp1 REAL, "
+                                      "temp2 REAL, "
+                                      "press1 REAL, "
+                                      "height REAL, "
+                                      "imu1 REAL, "
+                                      "imu2 REAL, "
+                                      "imu3 REAL, "
+                                      "gps_lat REAL, "
+                                      "gps_lon REAL, "
+                                      "gps_height REAL, "
+                                      "gps_cur REAL, "
+                                      "gps_v REAL, "
+                                      "gps_HH INTEGER, "
+                                      "gps_MM INTEGER, "
+                                      "gps_SS INTEGER, "
+                                      "gps_SAT INTEGER, "
+                                      "rssi INTEGER);", table);
+
+        rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+
+        if (rc != SQLITE_OK )
+        {
+            LOGE(tag, "Failed to crate table %s. Error: %s. SQL: %s", table, err_msg, sql);
+            sqlite3_free(err_msg);
+            sqlite3_free(sql);
+            return -1;
+        }
+        else
+        {
+            LOGD(tag, "Table %s created successfully", table);
+            sqlite3_free(sql);
+            return 0;
+        }
+
+    }
+
+}
+
+int storage_weather_data_get(const char *table, weather_data *data, int n)
+{
+    char **results;
+    char *err_msg;
+
+    char *sql = sqlite3_mprintf("SELECT * FROM %s ORDER BY idx DESC LIMIT %d", table, n);
+
+    int row;
+    int col;
+
+    // execute statement
+    sqlite3_get_table(db, sql, &results,&row,&col,&err_msg);
+
+    if(row==0 || col==0)
+    {
+        LOGI(tag, "Weather table empty");
+        return 0;
+    }
+    else
+    {
+        LOGI(tag, "Weather table")
+        int i;
+        for (i = 0; i < (col*row)+col; i++)
+        {
+//            if (i%col == 0 && i!=0)
+//            {
+//                time_t timef = atoi(results[i]);
+//                printf("%s\t",ctime(&timef));
+//                continue;
+//            }
+            printf("%s\t", results[i]);
+            if ((i + 1) % col == 0)
+                printf("\n");
+        }
+    }
+    return 0;
+}
+
+int storage_weather_data_set(const char *table, weather_data *data)
+{
+    char *err_msg;
+    int rc;
+
+//    time_t rawtime;
+//    struct tm *info;
+//    char buffer[80];
+//
+//    time( &rawtime );
+//    info = localtime( &rawtime );
+//    strftime(buffer,80,"%x - %I:%M%p", info);
+//    strftime(buffer,80,"%Y-%m-%d %H:%M:%S", info);
+
+//    printf("Formatted date & time : |%s|\n", buffer );
+
+    char *sql = sqlite3_mprintf(
+            "INSERT OR REPLACE INTO %s "
+                    "(date_time, temp1, temp2, press1, height, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
+                    " gps_HH, gps_MM, gps_SS, gps_SAT, rssi)\n "
+                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d);",
+            table, data->temp1, data->temp2, data->press1, data->height, data->imu1, data->imu2, data->imu3,
+            data->gps_lat, data->gps_lon, data->gps_height, data->gps_cur, data->gps_v, data->gps_HH, data->gps_MM,
+            data->gps_SS, data->gps_SAT, data->rssi);
+
+    rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
+
+    if (rc != SQLITE_OK)
+    {
+        LOGE(tag, "SQL error: %s", err_msg);
+        sqlite3_free(err_msg);
+        sqlite3_free(sql);
+        return -1;
+    }
+    else
+    {
+        LOGI(tag, "Inserted  weather data");
+        sqlite3_free(err_msg);
+        sqlite3_free(sql);
+        return 0;
+    }
+}

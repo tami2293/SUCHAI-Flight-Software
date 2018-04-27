@@ -31,6 +31,8 @@
     #include "cmdTestCommand.h"
 #endif
 
+#include "cmdWeather.h"
+
 /* Macros */
 /**
  * Send command to execution using dispatcherQueue (must be initialized). Blocks

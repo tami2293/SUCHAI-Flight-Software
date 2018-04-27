@@ -17,6 +17,7 @@ set(SOURCE_FILES
         src/system/cmdCOM.c
         src/system/cmdFP.c
         src/system/cmdConsole.c
+        src/system/cmdWeather.c
         src/system/repoCommand.c
         src/system/repoData.c
         src/system/taskDispatcher.c

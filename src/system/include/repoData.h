@@ -36,6 +36,7 @@
 #define DAT_OBC_OPMODE_FAIL     (2) ///< Generalized fail operation
 
 #define DAT_REPO_SYSTEM "dat_system"
+#define DAT_WEATHER_SYSTEM "weather_system"
 
 /**
  * System level status variables
