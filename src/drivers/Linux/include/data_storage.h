@@ -45,6 +45,7 @@ int storage_table_repo_init(char *table, int drop);
  * @param drop Int. Set to 1 to drop the existing table before create one
  * @return 0 OK, -1 Error
  */
+
 int storage_table_flight_plan_init(int drop);
 
 /**
@@ -158,5 +159,30 @@ int storage_show_table(void);
  * @return 0 OK, -1 Error
  */
 int storage_close(void);
+
+// Weather functions
+typedef struct weather_data{
+    float temp1;
+    float temp2;
+    float press1;
+    float height;
+    float imu1;
+    float imu2;
+    float imu3;
+    float gps_lat;
+    float gps_lon;
+    float gps_height;
+    float gps_cur;
+    float gps_v;
+    int gps_HH;
+    int gps_MM;
+    int gps_SS;
+    int gps_SAT;
+    int rssi;
+} weather_data;
+
+int storage_table_weather_init(char* table, int drop);
+int storage_get_weather_data(const char* table, weather_data* data);
+int storage_set_weather_data(const char* table, weather_data* data);
 
 #endif //SCH_PERSISTENT_H

@@ -80,6 +80,11 @@ void dat_repo_init(void)
         //Init system flight plan table
         rc=storage_table_flight_plan_init(0);
         assertf(rc==0, tag, "Unable to create flight plan table");
+
+        //Init wheather table
+        rc=storage_table_weather_init(DAT_WEATHER_SYSTEM, 0);
+        assertf(rc==0, tag, "Unable to create weather table");
+
     }
 #endif
 
