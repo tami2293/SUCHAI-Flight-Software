@@ -120,4 +120,6 @@ int obc_show_time(char* fmt, char* params,int nparams);
  */
 int test_fp(char* fmt, char* params,int nparams);
 
+int obc_system(char* fmt, char* params,int nparams);
+
 #endif /* CMD_OBC_H */

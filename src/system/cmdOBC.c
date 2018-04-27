@@ -32,6 +32,7 @@ void cmd_obc_init(void)
     cmd_add("show_time", obc_show_time,"%d",1);
     cmd_add("test_fp", test_fp, "%d %s %d", 3);
     cmd_add("reset_wdt", obc_reset_wdt, "", 0);
+    cmd_add("cmd_system", obc_system, "%s", 1);
 }
 
 int obc_debug(char *fmt, char *params, int nparams)
@@ -175,6 +176,20 @@ int test_fp(char* fmt, char* params,int nparams)
     else
     {
         LOGW(tag, "test_fp used with invalid params: %s", params);
+        return CMD_FAIL;
+    }
+}
+
+int obc_system(char* fmt, char* params,int nparams)
+{
+    char command[CMD_MAX_STR_PARAMS];
+    if(sscanf(params, fmt, &command) == nparams)
+    {
+        system(command);
+        return CMD_OK;
+    }
+    else
+    {
         return CMD_FAIL;
     }
 }
