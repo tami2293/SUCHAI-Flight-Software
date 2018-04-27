@@ -455,8 +455,41 @@ int storage_table_weather_init(char* table, int drop)
 
 }
 
-int storage_get_weather_data(const char* table, weather_data* data)
+int storage_get_weather_data(const char* table, weather_data* data, int n)
 {
+    char **results;
+    char *err_msg;
+
+    char *sql = sqlite3_mprintf("SELECT * FROM %s ORDER BY idx DESC LIMIT %d", table, n);
+
+    int row;
+    int col;
+
+    // execute statement
+    sqlite3_get_table(db, sql, &results,&row,&col,&err_msg);
+
+    if(row==0 || col==0)
+    {
+        LOGI(tag, "Weather table empty");
+        return 0;
+    }
+    else
+    {
+        LOGI(tag, "Weather table")
+        int i;
+        for (i = 0; i < (col*row)+col; i++)
+        {
+//            if (i%col == 0 && i!=0)
+//            {
+//                time_t timef = atoi(results[i]);
+//                printf("%s\t",ctime(&timef));
+//                continue;
+//            }
+            printf("%s\t", results[i]);
+            if ((i + 1) % col == 0)
+                printf("\n");
+        }
+    }
     return 0;
 }
 
