@@ -417,6 +417,7 @@ int storage_table_weather_init(char* table, int drop)
     {
         sql = sqlite3_mprintf("CREATE TABLE IF NOT EXISTS %s("
                                       "idx INTEGER PRIMARY KEY, "
+                                      "date_time TEXT,"
                                       "temp1 REAL, "
                                       "temp2 REAL, "
                                       "press1 REAL, "
@@ -498,11 +499,22 @@ int storage_weather_data_set(const char *table, weather_data *data)
     char *err_msg;
     int rc;
 
+//    time_t rawtime;
+//    struct tm *info;
+//    char buffer[80];
+//
+//    time( &rawtime );
+//    info = localtime( &rawtime );
+//    strftime(buffer,80,"%x - %I:%M%p", info);
+//    strftime(buffer,80,"%Y-%m-%d %H:%M:%S", info);
+
+//    printf("Formatted date & time : |%s|\n", buffer );
+
     char *sql = sqlite3_mprintf(
             "INSERT OR REPLACE INTO %s "
-                    "(temp1, temp2, press1, height, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
+                    "(date_time, temp1, temp2, press1, height, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
                     " gps_HH, gps_MM, gps_SS, gps_SAT, rssi)\n "
-                    "VALUES (%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d);",
+                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d);",
             table, data->temp1, data->temp2, data->press1, data->height, data->imu1, data->imu2, data->imu3,
             data->gps_lat, data->gps_lon, data->gps_height, data->gps_cur, data->gps_v, data->gps_HH, data->gps_MM,
             data->gps_SS, data->gps_SAT, data->rssi);
