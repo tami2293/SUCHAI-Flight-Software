@@ -182,7 +182,7 @@ typedef struct weather_data{
 } weather_data;
 
 int storage_table_weather_init(char* table, int drop);
-int storage_get_weather_data(const char* table, weather_data* data, int n);
-int storage_set_weather_data(const char* table, weather_data* data);
+int storage_weather_data_get(const char *table, weather_data *data, int n);
+int storage_weather_data_set(const char *table, weather_data *data);
 
 #endif //SCH_PERSISTENT_H
