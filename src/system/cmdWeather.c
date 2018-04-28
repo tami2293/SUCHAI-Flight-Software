@@ -54,3 +54,8 @@ int cmd_receive_weather(char *fmt, char *params, int nparams)
 
     return CMD_FAIL;
 }
+
+//int cmd_send_photo(char *fmt, char *params, int nparams){
+//    const char* path = "./26_07_-_20_46_45_image14_1500.jpg";
+//
+//}

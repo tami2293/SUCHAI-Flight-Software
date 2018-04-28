@@ -40,9 +40,27 @@ void taskCommunications(void *param)
         /* ZMQ SERVER */
         if((rc = zmq_recv(sub_socket, buff, SCH_BUFF_MAX_LEN, 0)) != -1)
         {
-            /* Parse commands */
+            /* Parse commands [Node(1)][Port(2)][Data(254)] */
             if(rc > 0)
-                com_receive_cmd(buff+1, (size_t)(rc-1));
+            {
+                int port = (int) buff[1];
+                cmd_t *new_tm;
+                switch(port)
+                {
+                    case SCH_TRX_PORT_TC:
+                        com_receive_cmd(buff + 2, (size_t) (rc - 2));
+                        break;
+                    case SCH_TRX_PORT_WT:
+                        new_tm = cmd_get_str("receive_weather_data");
+                        cmd_add_params_raw(new_tm, buff+2, rc-2);
+                        cmd_send(new_tm);
+                        break;
+                    default:
+                        LOGD(tag, "TC: %s", buff+1);
+                }
+            }
+
+
 
             /* Clear buffer */
             memset(buff, '\0', SCH_BUFF_MAX_LEN);
