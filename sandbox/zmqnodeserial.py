@@ -25,7 +25,7 @@ def monitor(port="8002", ip="localhost", node=b''):
         serial_port.write(frame[1:])
 
 
-def console(port="8001", ip="localhost"):
+def console(port="8001", ip="localhost", to_read=255):
     """ Send messages to node """
 
     sock = ctx.socket(zmq.PUB)
@@ -35,19 +35,22 @@ def console(port="8001", ip="localhost"):
 
     while True:
         try:
-            to_read = serial_port.inWaiting()
-            if(to_read):
-                data = serial_port.read(to_read)
-                if len(data) and (not data == '\r'):
-                    sock.send(data.decode("ascii", "replace"))
+            # to_read = serial_port.inWaiting()
+            # if(to_read):
+            data = serial_port.read(to_read)
+            print("SER: ", data)
+            if (len(data) == to_read) and (not data == '\r'):
+                sock.send(data)
+            else:
+                print("read:", len(data))
 
         except UnicodeDecodeError as e:
             print(e)
             pass
 
         except serial.SerialException as e:
-            self.alive = False
-            raise
+            print(e)
+            pass
 
 def get_parameters():
     """ Parse command line parameters """
@@ -72,7 +75,7 @@ if __name__ == "__main__":
     tasks = []
 
     try:
-        serial_port = serial.Serial(args.dev, args.baud, rtscts=False)
+        serial_port = serial.Serial(args.dev, args.baud, timeout=0.1)
     except Exception as e:
         print(e)
 

@@ -54,7 +54,7 @@
  * Fixed buffers lengths
  */
 #define CMD_MAX_LEN 100
-#define CMD_MAX_STR_PARAMS 64
+#define CMD_MAX_STR_PARAMS (SCH_BUFF_MAX_LEN-2)
 
 /**
  *  Defines the prototype of a command
@@ -132,7 +132,18 @@ cmd_t * cmd_get_idx(int idx);
 char * cmd_get_name(int idx);
 
 /**
- * Fills command parameters as string
+ * Fills command parameters as a raw buffer by coping @len bytes from
+ * @params to @cmd->params.
+ * @warning Does not check that @len == length(@params)
+ *
+ * @param cmd cmd_t. Command to fill parameters
+ * @param params void. Buffer with parameters
+ * @param len int. Length of @params buffers.
+ */
+void cmd_add_params_raw(cmd_t *cmd, void *params, int len);
+
+/**
+ * Fills command parameters as a string
  * @param cmd cmd_t. Command to fill parameters
  * @param params Str. String with parameters
  * @example

@@ -481,6 +481,12 @@ int storage_weather_data_get(const char *table, weather_data **data, int n)
         int i;
         for (i = 0; i < (col*row)+col; i++)
         {
+//            if (i%col == 0 && i!=0)
+//            {
+//                time_t timef = atoi(results[i]);
+//                printf("%s\t",ctime(&timef));
+//                continue;
+//            }
             printf("%s\t", results[i]);
             if ((i + 1) % col == 0)
                 printf("\n");
