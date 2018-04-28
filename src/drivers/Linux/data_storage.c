@@ -422,6 +422,7 @@ int storage_table_weather_init(char* table, int drop)
                                       "temp2 REAL, "
                                       "press1 REAL, "
                                       "height REAL, "
+                                      "humidity REAL, "
                                       "imu1 REAL, "
                                       "imu2 REAL, "
                                       "imu3 REAL, "
@@ -512,12 +513,12 @@ int storage_weather_data_set(const char *table, weather_data *data)
 
     char *sql = sqlite3_mprintf(
             "INSERT OR REPLACE INTO %s "
-                    "(date_time, temp1, temp2, press1, height, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
-                    " gps_HH, gps_MM, gps_SS, gps_SAT, rssi)\n "
+                    "(date_time, temp1, temp2, press1, height, humidity, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
+                    " gps_HH, gps_MM, gps_SS, gps_SAT)\n "
                     "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d);",
-            table, data->temp1, data->temp2, data->press1, data->height, data->imu1, data->imu2, data->imu3,
-            data->gps_lat, data->gps_lon, data->gps_height, data->gps_cur, data->gps_v, data->gps_HH, data->gps_MM,
-            data->gps_SS, data->gps_SAT, data->rssi);
+            table, data->Temp1, data->Temp2, data->Pressure, data->Alt, data->Humidity, data->IMU1, data->IMU2, data->IMU3,
+            data->GPS_Lat, data->GPS_Lng, data->GPS_Alt, data->GPS_Crse, data->GPS_Speed, data->GPS_HH, data->GPS_MM,
+            data->GPS_SS, data->GPS_Sat);
 
     rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
 

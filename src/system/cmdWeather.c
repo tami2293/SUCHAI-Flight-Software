@@ -30,23 +30,25 @@ int cmd_receive_weather(char *fmt, char *params, int nparams)
 {
 
     weather_data data;
-    data.temp1 = 1.0;
-    data.temp2 = 1.0;
-    data.press1 = 1.0;
-    data.height = 1.0;
-    data.imu1 = 1.0;
-    data.imu2 = 1.0;
-    data.imu3 = 1.0;
-    data.gps_lat = 1.0;
-    data.gps_lon = 1.0;
-    data.gps_height = 1.0;
-    data.gps_cur = 1.0;
-    data.gps_v = 1.0;
-    data.gps_HH = 1;
-    data.gps_MM = 1;
-    data.gps_SS = 1;
-    data.gps_SAT = 1;
-    data.rssi=1;
+    data.Temp1 = 1.0;
+    data.Temp2 = 1.0;
+    data.Pressure = 1.0;
+    data.Alt = 1.0;
+    data.Humidity = 1.0;
+    data.IMU1 = 1.0;
+    data.IMU2 = 1.0;
+    data.IMU3 = 1.0;
+    data.GPS_Lat = 1.0;
+    data.GPS_Lng = 1.0;
+    data.GPS_Alt = 1.0;
+    data.GPS_Crse = 1.0;
+    data.GPS_Speed = 1.0;
+    data.GPS_HH = 1;
+    data.GPS_MM = 1;
+    data.GPS_SS = 1;
+    data.GPS_Sat = 1;
+
+
     int rc = storage_weather_data_set(DAT_WEATHER_SYSTEM, &data);
 
     if(rc > 0)
