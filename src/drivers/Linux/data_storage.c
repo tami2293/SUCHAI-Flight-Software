@@ -435,6 +435,7 @@ int storage_table_weather_init(char* table, int drop)
                                       "gps_MM INTEGER, "
                                       "gps_SS INTEGER, "
                                       "gps_SAT INTEGER, "
+                                      "gps_VAL INTEGER, "
                                       "rssi INTEGER);", table);
 
         rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
@@ -481,12 +482,6 @@ int storage_weather_data_get(const char *table, weather_data **data, int n)
         int i;
         for (i = 0; i < (col*row)+col; i++)
         {
-//            if (i%col == 0 && i!=0)
-//            {
-//                time_t timef = atoi(results[i]);
-//                printf("%s\t",ctime(&timef));
-//                continue;
-//            }
             printf("%s\t", results[i]);
             if ((i + 1) % col == 0)
                 printf("\n");
@@ -494,6 +489,7 @@ int storage_weather_data_get(const char *table, weather_data **data, int n)
 
         for (i = 0; i < row; i++)
         {
+
 
         }
     }
@@ -519,11 +515,11 @@ int storage_weather_data_set(const char *table, weather_data *data)
     char *sql = sqlite3_mprintf(
             "INSERT OR REPLACE INTO %s "
                     "(date_time, temp1, temp2, press1, height, humidity, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
-                    " gps_HH, gps_MM, gps_SS, gps_SAT)\n "
-                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u);",
+                    " gps_HH, gps_MM, gps_SS, gps_SAT, gps_VAL)\n "
+                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u, %u);",
             table, data->Temp1, data->Temp2, data->Pressure, data->Alt, data->Humidity, data->IMU1, data->IMU2, data->IMU3,
             data->GPS_Lat, data->GPS_Lng, data->GPS_Alt, data->GPS_Crse, data->GPS_Speed, data->GPS_HH, data->GPS_MM,
-            data->GPS_SS, data->GPS_Sat);
+            data->GPS_SS, data->GPS_Sat, data->GPS_VAL);
 
     rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
 
