@@ -162,24 +162,44 @@ int storage_show_table(void);
 int storage_close(void);
 
 // Weather functions
-typedef struct weather_data{
-    float temp1;
-    float temp2;
-    float press1;
-    float height;
-    float imu1;
-    float imu2;
-    float imu3;
-    float gps_lat;
-    float gps_lon;
-    float gps_height;
-    float gps_cur;
-    float gps_v;
-    int gps_HH;
-    int gps_MM;
-    int gps_SS;
-    int gps_SAT;
-    int rssi;
+//typedef struct weather_data{
+//    float temp1;
+//    float temp2;
+//    float press1;
+//    float height;
+//    float imu1;
+//    float imu2;
+//    float imu3;
+//    float gps_lat;
+//    float gps_lon;
+//    float gps_height;
+//    float gps_cur;
+//    float gps_v;
+//    int gps_HH;
+//    int gps_MM;
+//    int gps_SS;
+//    int gps_SAT;
+//    int rssi;
+//} weather_data;
+
+typedef struct weather_data {
+    float Temp1;
+    float Pressure;
+    float Alt;
+    float Temp2;
+    float Humidity;
+    float IMU1;
+    float IMU2;
+    float IMU3;
+    float GPS_Lat;
+    float GPS_Lng;
+    float GPS_Alt;
+    float GPS_Crse;
+    float GPS_Speed;
+    uint8_t GPS_HH;
+    uint8_t GPS_MM;
+    uint8_t GPS_SS;
+    uint32_t GPS_Sat;
 } weather_data;
 
 int storage_table_weather_init(char* table, int drop);
