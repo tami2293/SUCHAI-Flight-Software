@@ -53,4 +53,6 @@ int com_send_dbg(char *fmt, char *param, int nparams);
  */
 int com_send_cmd(char *fmt, char *param, int nparams);
 
+int com_send_data(char node, char *data, size_t len);
+
 #endif /* CMD_COM_H */

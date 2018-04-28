@@ -51,4 +51,6 @@
 #define SCH_STORAGE_MODE   	1   ///< Status repository location. (0) RAM, (1) Single external.
 #define SCH_STORAGE_FILE    "/tmp/suchai.db"
 
+#define DATA_MAX_LEN 253
+
 #endif	/* SUCHAI_CONFIG_H */

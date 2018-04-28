@@ -14,11 +14,11 @@ void cmd_weather_init(void)
 
 int cmd_send_weather(char *fmt, char *params, int nparams)
 {
-    int node;
-    if(sscanf(params, fmt, &node) == nparams)
+    int n_data;
+    if(sscanf(params, fmt, &n_data) == nparams)
     {
-        weather_data *data;
-        int rc = storage_weather_data_get(DAT_WEATHER_SYSTEM, data, node);
+        weather_data data[n_data];
+        int rc = storage_weather_data_get(DAT_WEATHER_SYSTEM, &data, n_data);
 
         if(rc > 0)
             return CMD_OK;

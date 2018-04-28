@@ -20,7 +20,6 @@
 #include "cmdCOM.h"
 
 static const char *tag = "cmdCOM";
-static int com_send_data(char node, char *data, size_t len);
 
 void cmd_com_init(void)
 {
@@ -91,7 +90,8 @@ int com_send_cmd(char *fmt, char *params, int nparams)
  * @param len size_t data len
  * @return
  */
-static int com_send_data(char node, char *data, size_t len)
+
+int com_send_data(char node, char *data, size_t len)
 {
     int rc;
 //    /* Create socket */
