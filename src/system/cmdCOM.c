@@ -93,12 +93,13 @@ int com_send_cmd(char *fmt, char *params, int nparams)
  */
 static int com_send_data(char node, char *data, size_t len)
 {
-    /* Create socket */
+    int rc;
+//    /* Create socket */
     assert(zmq_context != NULL);
-    void *socket = zmq_socket(zmq_context, ZMQ_PUB);
-    assert(socket != NULL);
-    int rc = zmq_connect(socket, SCH_COMM_ZMQ_OUT);
-    assert(rc == 0);
+//    void *socket = zmq_socket(zmq_context, ZMQ_PUB);
+    assert(pub_socket != NULL);
+//    int rc = zmq_connect(socket, SCH_COMM_ZMQ_OUT);
+//    assert(rc == 0);
 
     /* Creating a ZMQ message [NODE(1)][      DATA (255)    ] */
     char msg[SCH_COM_MAX_LEN+1];
@@ -110,7 +111,7 @@ static int com_send_data(char node, char *data, size_t len)
     memcpy(msg+1, data, len);
     LOGV(tag, "%s", msg);
     /* Send message */
-    rc = zmq_send(socket, msg, SCH_COM_MAX_LEN+1, 0);
+    rc = zmq_send(pub_socket, msg, SCH_COM_MAX_LEN+1, 0);
     assert(rc > 0);
 //    free(msg);
 }

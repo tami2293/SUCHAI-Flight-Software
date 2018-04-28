@@ -27,11 +27,11 @@
 #endif
 
 /* System debug configurations */
-#define LOG_LEVEL       LOG_LVL_INFO     ///<  LOG_LVL_INFO |  LOG_LVL_DEBUG
+#define LOG_LEVEL       LOG_LVL_VERBOSE     ///<  LOG_LVL_INFO |  LOG_LVL_DEBUG
 
 /* General system settings */
 #define SCH_BUFF_MAX_LEN            (256)   ///< General buffers max length (bytes)
-#define SCH_COMM_ENABLE             0       ///< TaskCommunications enabled (0 | 1)
+#define SCH_COMM_ENABLE             1       ///< TaskCommunications enabled (0 | 1)
 #define SCH_FP_ENABLED              0       ///< TaskFlightPlan enabled (0 | 1)
 #define SCH_HK_ENABLED              1       ///< TaskHousekeeping enabled (0 | 1)
 #define SCH_TEST_ENABLED            0       ///< Set to run tests (0 | 1)

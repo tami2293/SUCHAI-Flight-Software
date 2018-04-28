@@ -25,6 +25,10 @@ void on_close(int signal)
 {
     dat_repo_close();
 
+    zmq_close(pub_socket);
+    zmq_close(sub_socket);
+    zmq_ctx_destroy(zmq_context);
+
     LOGI(tag, "Exit system!");
     exit(signal);
 }
@@ -37,33 +41,26 @@ void on_reset(void)
     sigaction(SIGINT, &act, NULL);  // Register CTR+C signal handler
     sigaction(SIGTERM, &act, NULL);
 
-#if 0 //SCH_COMM_ENABLE
+#if SCH_COMM_ENABLE
+    int rc;
     /* Init communications */
-    LOGI(tag, "Initialising CSP...");
-    /* Init buffer system with 5 packets of maximum 300 bytes each */
-    csp_buffer_init(5, 300);
-    /* Init CSP with address MY_ADDRESS */
-    csp_init(SCH_COMM_ADDRESS);
-    /* Start router task with 500 word stack, OS task priority 1 */
-    csp_route_start_task(500, 1);
+    zmq_context = zmq_ctx_new();  // Initialize ZMQ context
 
-    csp_debug_set_level(1, 1);
-    csp_debug_set_level(2, 1);
-    csp_debug_set_level(3, 1);
-    csp_debug_set_level(4, 1);
-    csp_debug_set_level(5, 1);
-    csp_debug_set_level(6, 1);
+    // Create in socket
+    assert(zmq_context != NULL);
+    sub_socket = zmq_socket(zmq_context, ZMQ_SUB);
+    assert(sub_socket != NULL);
+    rc = zmq_connect(sub_socket, SCH_COMM_ZMQ_IN);
+    assert (rc == 0);
+    char addr = (char) SCH_COMM_ADDRESS;
+    rc = zmq_setsockopt(sub_socket, ZMQ_SUBSCRIBE, &addr, 1);
+    assert (rc == 0);
 
-    /* Set ZMQ interface */
-    #ifdef LINUX
-        LOGV(tag, "Set ZMQ interface...");
-        csp_zmqhub_init_w_endpoints(255, SCH_COMM_ZMQ_OUT, SCH_COMM_ZMQ_IN);
-        csp_route_set(CSP_DEFAULT_ROUTE, &csp_if_zmqhub, CSP_NODE_MAC);
-    #endif
-
-    LOGD(tag, "Route table");
-    csp_route_print_table();
-    LOGD(tag, "Interfaces");
-    csp_route_print_interfaces();
+    /* Create out socket */
+    assert(zmq_context != NULL);
+    pub_socket = zmq_socket(zmq_context, ZMQ_PUB);
+    assert(pub_socket != NULL);
+    rc = zmq_connect(pub_socket, SCH_COMM_ZMQ_OUT);
+    assert(rc == 0);
 #endif
 }

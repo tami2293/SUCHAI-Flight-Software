@@ -29,15 +29,8 @@ void taskCommunications(void *param)
     LOGD(tag, "Started");
     int rc;
 
-    // Create and connect to SUB socket
     assert(zmq_context != NULL);
-    void *socket = zmq_socket(zmq_context, ZMQ_SUB);
-    assert(socket != NULL);
-    rc = zmq_connect(socket, SCH_COMM_ZMQ_IN);
-    assert (rc == 0);
-    char addr = (char) SCH_COMM_ADDRESS;
-    rc = zmq_setsockopt(socket, ZMQ_SUBSCRIBE, &addr, 1);
-    assert (rc == 0);
+    assert(sub_socket != NULL);
 
     char buff[SCH_BUFF_MAX_LEN];
     memset(buff, '\0', SCH_BUFF_MAX_LEN);
@@ -45,7 +38,7 @@ void taskCommunications(void *param)
     while(1)
     {
         /* ZMQ SERVER */
-        if((rc = zmq_recv(socket, buff, SCH_BUFF_MAX_LEN, 0)) != -1)
+        if((rc = zmq_recv(sub_socket, buff, SCH_BUFF_MAX_LEN, 0)) != -1)
         {
             /* Parse commands */
             if(rc > 0)

@@ -15,5 +15,7 @@ osSemaphore repo_data_sem;    /* Data repository mutex */
 osSemaphore repo_cmd_sem;     /* Command repository mutex */
 
 void *zmq_context;            /* ZMQ context */
+void *pub_socket;             /* ZMQ SUB socket */
+void *sub_socket;             /* ZMQ PUB socket */
 
 #endif //GLOBALS_H
