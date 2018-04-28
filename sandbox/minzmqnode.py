@@ -32,9 +32,11 @@ def console(port="8001", ip="localhost"):
                 data = cmd[1]
             else:
                 data = cmd[0]
-            msg = (chr(node) + data).encode("ascii","replace")
-            #print(msg)
-            sock.send(msg)
+
+            if len(data) > 0:
+                msg = (chr(node) + data).encode("ascii","replace")
+                #print(msg)
+                sock.send(msg)
         except Exception:
             pass
         time.sleep(0.25)
@@ -62,12 +64,14 @@ if __name__ == "__main__":
     if args.nmon:
         # Start monitor thread
         mon_th = Thread(target=monitor, args=(args.out_port, args.ip, args.node))
+        mon_th.daemon = True
         tasks.append(mon_th)
         mon_th.start()
 
     if args.ncon:
         # Create a console socket
         con_th = Thread(target=console, args=(args.in_port, args.ip))
+        con_th.daemon = True
         tasks.append(con_th)
         con_th.start()
         

@@ -93,11 +93,13 @@ if __name__ == "__main__":
         s_mon.bind('tcp://*:{}'.format(args.mon_port))
         # Start monitor thread
         mon_th = Thread(target=monitor, args=(args.mon_port,))
+        mon_th.daemon = True
         mon_th.start()
 
     if args.con:
         # Create a console socket
         con_th = Thread(target=console, args=(args.in_port, ))
+        con_th.daemon = True
         con_th.start()
 
     # Start ZMQ proxy (blocking)
