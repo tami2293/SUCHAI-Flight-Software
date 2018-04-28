@@ -29,16 +29,11 @@ int cmd_send_weather(char *fmt, char *params, int nparams)
 int cmd_receive_weather(char *fmt, char *params, int nparams)
 {
     weather_data data;
-    memcpy((char*) &data, params, sizeof(data));
+    memcpy((void *)&data, (void *)params, sizeof(data));
     int rc = storage_weather_data_set(DAT_WEATHER_SYSTEM, &data);
-
-    // DEBUG ONLY
-    rc = storage_weather_data_get(DAT_WEATHER_SYSTEM, NULL, 1);
-    // DEBUG ONLY
 
     if(rc >= 0)
         return CMD_OK;
-
     return CMD_FAIL;
 }
 

@@ -40,7 +40,7 @@ void taskCommunications(void *param)
         /* ZMQ SERVER */
         if((rc = zmq_recv(sub_socket, buff, SCH_BUFF_MAX_LEN, 0)) != -1)
         {
-            /* Parse commands [Node(1)][Port(2)][Data(254)] */
+            /* Parse commands [Node(1)][Port(1)][Data(253)] */
             if(rc > 0)
             {
                 int port = (int) buff[1];

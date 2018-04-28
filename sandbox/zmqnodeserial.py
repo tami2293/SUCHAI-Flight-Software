@@ -41,6 +41,8 @@ def console(port="8001", ip="localhost", to_read=255):
             print("SER: ", data)
             if (len(data) == to_read) and (not data == '\r'):
                 sock.send(data)
+            else:
+                print("read:", len(data))
 
         except UnicodeDecodeError as e:
             print(e)

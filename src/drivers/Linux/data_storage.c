@@ -537,3 +537,25 @@ int storage_weather_data_set(const char *table, weather_data *data)
         return 0;
     }
 }
+
+void print_weather_data(weather_data *data)
+{
+    printf("Temp1: %f\n", data->Temp1);
+    printf("Pressure: %f\n", data->Pressure);
+    printf("Alt: %f\n", data->Alt);
+    printf("Temp2: %f\n", data->Temp2);
+    printf("Humidity: %f\n", data->Humidity);
+    printf("IMU1: %f\n", data->IMU1);
+    printf("IMU2: %f\n", data->IMU2);
+    printf("IMU3: %f\n", data->IMU3);
+    printf("GPS_Lat: %f\n", data->GPS_Lat);
+    printf("GPS_Lng: %f\n", data->GPS_Lng);
+    printf("GPS_Alt: %f\n", data->GPS_Alt);
+    printf("GPS_Crse: %f\n", data->GPS_Crse);
+    printf("GPS_Speed: %f\n", data->GPS_Speed);
+    printf("GPS_HH: %u\n", data->GPS_HH);
+    printf("GPS_MM: %u\n", data->GPS_MM);
+    printf("GPS_SS: %u\n", data->GPS_SS);
+    printf("GPS_VAL: %u\n", data->GPS_VAL);
+    printf("GPS_Sat: %u\n", data->GPS_Sat);
+}

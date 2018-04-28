@@ -199,11 +199,13 @@ typedef struct weather_data {
     uint8_t GPS_HH;
     uint8_t GPS_MM;
     uint8_t GPS_SS;
+    uint8_t GPS_VAL;
     uint32_t GPS_Sat;
 } weather_data;
 
 int storage_table_weather_init(char* table, int drop);
 int storage_weather_data_get(const char *table, weather_data *data, int n);
 int storage_weather_data_set(const char *table, weather_data *data);
+void print_weather_data(weather_data *data);
 
 #endif //SCH_PERSISTENT_H

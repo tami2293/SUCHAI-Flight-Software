@@ -147,8 +147,8 @@ void cmd_add_params_raw(cmd_t *cmd, void *params, int len)
     // Check pointers
     if(cmd != NULL && params != NULL)
     {
-        cmd->params = (char *)malloc(sizeof(char)*(len));
-        memcpy(cmd->params, params, len);
+        cmd->params = (char *)malloc((size_t)len);
+        memcpy(cmd->params, params, (size_t)len);
     }
 }
 
