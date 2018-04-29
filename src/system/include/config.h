@@ -40,6 +40,8 @@
 
 /* Communications system settings */
 #define SCH_COMM_ADDRESS            (1)                     ///< Node address
+#define SCH_NODE_ARDUINO            (2)                     ///< Node address
+#define SCH_NODE_IRIDIUM            (3)                     ///< Node address
 #define SCH_TRX_PORT_WT             (10)                    ///< Telemetry port (weather data)
 #define SCH_TRX_PORT_TC             (11)                    ///< Telecommands port (in the flight software)
 #define SCH_TRX_PORT_PH             (12)                    ///< Telemetry pott (images data)

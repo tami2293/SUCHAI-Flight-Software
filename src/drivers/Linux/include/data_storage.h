@@ -203,6 +203,21 @@ typedef struct weather_data {
     uint32_t GPS_Sat;
 } weather_data;
 
+typedef struct data_iridium {
+    float Temp1;    // 4
+    float Pressure; // 8
+    float Alt;      // 12
+    float Temp2;    // 16
+    float Humidity; // 20
+    float GPS_Lat;  // 24
+    float GPS_Lng;  // 28
+    float GPS_Alt;  // 32
+    float GPS_Crse; // 36
+    float GPS_Speed;// 40
+    uint8_t GPS_VAL;// 41
+    uint8_t padding[3];
+} data_iridium_t;
+
 int storage_table_weather_init(char* table, int drop);
 int storage_weather_data_get(const char *table, weather_data data[], int n);
 int storage_weather_data_set(const char *table, weather_data *data);

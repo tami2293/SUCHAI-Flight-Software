@@ -22,7 +22,12 @@ def monitor(port="8002", ip="localhost", node=b''):
     while True:
         frame = sock.recv_multipart()[0]
         print('MON:', frame)
-        serial_port.write(frame)
+        # [node][data(41)][padding (254-41)]
+        data = frame[1:42]
+        hdr = b"AT+SBDWT="
+        tail = b"\r"
+        serial_port.write(hdr+data+tail)
+        serial_port.write(b"AT+SBDIX\r")
 
 
 def console(port="8001", ip="localhost", to_read=255):
@@ -38,11 +43,9 @@ def console(port="8001", ip="localhost", to_read=255):
             # to_read = serial_port.inWaiting()
             # if(to_read):
             data = serial_port.read(to_read)
-            if (len(data) == to_read) and (not data == '\r'):
+            if (len(data)) and (not data == '\r'):
                 print("SER: ", data)
-                sock.send(data)
-            # else:
-            #     print("read:", len(data))
+                print(data)
 
         except UnicodeDecodeError as e:
             print(e)
@@ -75,7 +78,7 @@ if __name__ == "__main__":
     tasks = []
 
     try:
-        serial_port = serial.Serial(args.dev, args.baud, timeout=0.1)
+        serial_port = serial.Serial(args.dev, args.baud, timeout=1)
     except Exception as e:
         print(e)
 
