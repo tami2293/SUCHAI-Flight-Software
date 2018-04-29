@@ -19,7 +19,7 @@
 
 #include "repoCommand.h"
 
-#define SCH_COM_MAX_LEN (255)
+#define SCH_COM_MAX_LEN (SCH_BUFF_MAX_LEN)
 
 /**
  * Registers communications commands in the system

@@ -21,7 +21,7 @@ def monitor(port="8002", ip="localhost", node=b''):
 
     while True:
         frame = sock.recv_multipart()[0]
-        print('MON:', frame)
+        print('MON:', len(frame), frame)
         serial_port.write(frame)
 
 
@@ -39,7 +39,7 @@ def console(port="8001", ip="localhost", to_read=255):
             # if(to_read):
             data = serial_port.read(to_read)
             if (len(data) == to_read) and (not data == '\r'):
-                print("SER: ", data)
+                print("SER: ", len(data), data)
                 sock.send(data)
             # else:
             #     print("read:", len(data))
@@ -62,6 +62,7 @@ def get_parameters():
     parser.add_argument("-o", "--out_port", default="8002", help="Output port")
     parser.add_argument("--nmon", action="store_false", help="Disable monitor task") 
     parser.add_argument("--ncon", action="store_false", help="Disable console task")
+    parser.add_argument("-l", "--len", type=int, default=128, help="Frame length")
     parser.add_argument("dev", help="Serial port eg: /dev/tty0, /dev/ttyUSB0")
     parser.add_argument("baud", type=int, help="Baudrate eg: 115200, 500000")
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
 
     if args.ncon:
         # Create a console socket
-        con_th = Thread(target=console, args=(args.in_port, args.ip))
+        con_th = Thread(target=console, args=(args.in_port, args.ip, args.len))
         con_th.daemon = True
         tasks.append(con_th)
         con_th.start()

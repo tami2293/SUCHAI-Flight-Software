@@ -102,16 +102,16 @@ int com_send_data(char node, char *data, size_t len)
 //    assert(rc == 0);
 
     /* Creating a ZMQ message [NODE(1)][      DATA (255)    ] */
-    char msg[SCH_COM_MAX_LEN+1];
+    char msg[SCH_COM_MAX_LEN];
     assert(msg != NULL);
-    memset(msg, '\0', SCH_COM_MAX_LEN+1);
+    memset(msg, '\0', SCH_COM_MAX_LEN);
     /* Copy Node and Data to message */
-    assert(len <= SCH_COM_MAX_LEN);
+    assert(len <= SCH_COM_MAX_LEN-1);
     msg[0] = node;
     memcpy(msg+1, data, len);
     LOGV(tag, "%s", msg);
     /* Send message */
-    rc = zmq_send(pub_socket, msg, SCH_COM_MAX_LEN+1, 0);
+    rc = zmq_send(pub_socket, msg, SCH_COM_MAX_LEN, 0);
     assert(rc > 0);
 //    free(msg);
 }
