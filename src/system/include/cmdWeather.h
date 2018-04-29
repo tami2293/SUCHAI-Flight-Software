@@ -12,5 +12,6 @@
 void cmd_weather_init(void);
 int cmd_send_weather(char *fmt, char *params, int nparams);
 int cmd_receive_weather(char *fmt, char *params, int nparams);
+int cmd_get_weather(char *fmt, char *params, int nparams);
 
 #endif //SUCHAI_FLIGHT_SOFTWARE_CMDWEATHER_H

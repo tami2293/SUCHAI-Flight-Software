@@ -458,7 +458,7 @@ int storage_table_weather_init(char* table, int drop)
 
 }
 
-int storage_weather_data_get(const char *table, weather_data **data, int n)
+int storage_weather_data_get(const char *table, weather_data data[], int n)
 {
     char **results;
     char *err_msg;
@@ -489,8 +489,24 @@ int storage_weather_data_get(const char *table, weather_data **data, int n)
 
         for (i = 0; i < row; i++)
         {
-
-
+            data[i].Temp1 =  atof(results[(i*col)+col+2]);
+            data[i].Pressure = atof(results[(i*col)+col+4]);
+            data[i].Alt = atof(results[(i*col)+col+5]);
+            data[i].Temp2 = atof(results[(i*col)+col+3]);
+            data[i].Humidity = atof(results[(i*col)+col+6]);
+            data[i].IMU1 = atof(results[(i*col)+col+7]);
+            data[i].IMU2 = atof(results[(i*col)+col+8]);
+            data[i].IMU3 = atof(results[(i*col)+col+9]);
+            data[i].GPS_Lat = atof(results[(i*col)+col+10]);
+            data[i].GPS_Lng = atof(results[(i*col)+col+11]);
+            data[i].GPS_Alt = atof(results[(i*col)+col+12]);
+            data[i].GPS_Crse = atof(results[(i*col)+col+13]);
+            data[i].GPS_Speed = atof(results[(i*col)+col+14]);
+            data[i].GPS_HH = (uint8_t)atoi(results[(i*col)+col+15]);
+            data[i].GPS_MM = (uint8_t)atoi(results[(i*col)+col+16]);
+            data[i].GPS_SS = (uint8_t)atoi(results[(i*col)+col+17]);
+            data[i].GPS_Sat = (uint32_t)atoi(results[(i*col)+col+18]);
+            data[i].GPS_VAL = (uint8_t)atoi(results[(i*col)+col+19]);
         }
     }
     return 0;
@@ -516,7 +532,7 @@ int storage_weather_data_set(const char *table, weather_data *data)
             "INSERT OR REPLACE INTO %s "
                     "(date_time, temp1, temp2, press1, height, humidity, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
                     " gps_HH, gps_MM, gps_SS, gps_SAT, gps_VAL)\n "
-                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u, %u);",
+                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u);",
             table, data->Temp1, data->Temp2, data->Pressure, data->Alt, data->Humidity, data->IMU1, data->IMU2, data->IMU3,
             data->GPS_Lat, data->GPS_Lng, data->GPS_Alt, data->GPS_Crse, data->GPS_Speed, data->GPS_HH, data->GPS_MM,
             data->GPS_SS, data->GPS_Sat, data->GPS_VAL);
@@ -541,21 +557,22 @@ int storage_weather_data_set(const char *table, weather_data *data)
 
 void print_weather_data(weather_data *data)
 {
-    printf("Temp1: %f", data->Temp1);
-    printf("Pressure: %f", data->Pressure);
-    printf("Alt: %f", data->Alt);
-    printf("Temp2: %f", data->Temp2);
-    printf("Humidity: %f", data->Humidity);
-    printf("IMU1: %f", data->IMU1);
-    printf("IMU2: %f", data->IMU2);
-    printf("IMU3: %f", data->IMU3);
-    printf("GPS_Lat: %f", data->GPS_Lat);
-    printf("GPS_Lng: %f", data->GPS_Lng);
-    printf("GPS_Alt: %f", data->GPS_Alt);
-    printf("GPS_Crse: %f", data->GPS_Crse);
-    printf("GPS_Speed: %f", data->GPS_Speed);
-    printf("GPS_HH: %u", data->GPS_HH);
-    printf("GPS_MM: %u", data->GPS_MM);
-    printf("GPS_SS: %u", data->GPS_SS);
-    printf("GPS_Sat: %d", data->GPS_Sat);
+    printf("Temp1: %f\n", data->Temp1);
+    printf("Pressure: %f\n", data->Pressure);
+    printf("Alt: %f\n", data->Alt);
+    printf("Temp2: %f\n", data->Temp2);
+    printf("Humidity: %f\n", data->Humidity);
+    printf("IMU1: %f\n", data->IMU1);
+    printf("IMU2: %f\n", data->IMU2);
+    printf("IMU3: %f\n", data->IMU3);
+    printf("GPS_Lat: %f\n", data->GPS_Lat);
+    printf("GPS_Lng: %f\n", data->GPS_Lng);
+    printf("GPS_Alt: %f\n", data->GPS_Alt);
+    printf("GPS_Crse: %f\n", data->GPS_Crse);
+    printf("GPS_Speed: %f\n", data->GPS_Speed);
+    printf("GPS_HH: %u\n", data->GPS_HH);
+    printf("GPS_MM: %u\n", data->GPS_MM);
+    printf("GPS_SS: %u\n", data->GPS_SS);
+    printf("GPS_VAL: %u\n", data->GPS_VAL);
+    printf("GPS_Sat: %u\n", data->GPS_Sat);
 }
