@@ -37,8 +37,8 @@ void taskWatchdog(void *param)
         // Sleep task to count seconds
         osTaskDelayUntil(&xLastWakeTime, delay_ms);
         elapsed_obc_timer++; // Increase timer to reset the obc wdt
-        elapsed_gnd_timer = (unsigned  int)dat_get_system_var(dat_gnd_wdt) + 1; //Increase GND timer counter. Should be cleared by a gnd command
-        dat_set_system_var(dat_gnd_wdt, elapsed_gnd_timer); // Save increased GND timer
+        elapsed_gnd_timer = (unsigned  int)dat_get_system_var(dat_obc_gnd_wdt) + 1; //Increase GND timer counter. Should be cleared by a gnd command
+        dat_set_system_var(dat_obc_gnd_wdt, elapsed_gnd_timer); // Save increased GND timer
 
         LOGV(tag, "GND_WDT (%d)", elapsed_gnd_timer);
 

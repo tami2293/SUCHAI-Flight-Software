@@ -56,44 +56,31 @@ typedef enum dat_system{
     //OBC => (C&DH subsystem)
     dat_obc_opmode=0,           ///< General operation mode
     dat_obc_lastResetSource,    ///< Last reset source
-    dat_obc_hours_alive,         ///< Hours since first boot
-    dat_obc_hours_without_reset, ///< Hours since last reset
-    dat_obc_reset_counter,       ///< Number of reset since first boot
-    dat_gnd_wdt,                ///< GND watchdog timer counter
+    dat_obc_hours_alive,        ///< Hours since first boot
+    dat_obc_hours_without_reset,///< Hours since last reset
+    dat_obc_reset_counter,      ///< Number of reset since first boot
+    dat_obc_gnd_wdt,                ///< GND watchdog timer counter
 
     //DEP => (C&DH subsystem)
-    dat_dep_ant_deployed,       ///< Is antena deployed?
+    dat_dep_ant_deployed,       ///< Is antenna deployed
 
     //RTC => (C&DH subsystem)
-    dat_rtc_year,               ///< System current date and clock
-    dat_rtc_month,              ///< System current date and clock
-    dat_rtc_week_day,           ///< System current date and clock
-    dat_rtc_day_number,         ///< System current date and clock
-    dat_rtc_hours,              ///< System current date and clock
-    dat_rtc_minutes,            ///< System current date and clock
-    dat_rtc_seconds,            ///< System current date and clock
-
-    //EPS => (Energy subsystem)
-    dat_eps_status,             ///< Energy system general status
-    dat_eps_soc,                ///< Current availible energy level
+    dat_rtc_date_time,          /// RTC current unix time
 
     //TRX => (Communication subsystem)
     dat_trx_opmode,             ///< TRX Operation mode
-    dat_trx_beacon_pwr,         ///< TRX Beacon power level
-    dat_trx_telemetry_pwr,      ///< TRX Telemetry Power
-    dat_trx_count_tm,           ///< number of sended TM
+    dat_trx_count_tm,           ///< number of sent TM
     dat_trx_count_tc,           ///< number of received TC
-    dat_trx_lastcmd_day,        ///< day of the last received tc (since 1/1/00)
-
-    // Cmd buffer control
-    dat_trx_newTcFrame,         ///< Exist any unprocessed TC?
-    dat_trx_newCmdBuff,         ///< Exist unprocessed CMD in the internal buffer?
+    dat_trx_last_tc,            ///< day of the last received tc
 
     //FLIGHT PLAN
-    dat_fpl_index,              ///< Flight plan entry to be edited
+    dat_fpl_last,              ///< Last executed flight plan
+    dat_fpl_queue,             ///< Flight plan queue length
 
-    /* Add custom status variables here */
+    // Add custom status variables here
+    dat_balloon_phase,          ///< Balloon phase (0: (A) ascend, 1 (A1) ascend, 2 (B) stable, 3 (C) descend, 4 (C) ground.
 
+    // Las element, do not edit
     dat_system_last_var         ///< Dummy element
 }dat_system_t;
 

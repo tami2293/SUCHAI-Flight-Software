@@ -117,7 +117,7 @@ int drp_update_hours_alive(char *fmt, char *params, int nparams)
 
 int drp_clear_gnd_wdt(char *fmt, char *params, int nparams)
 {
-    dat_set_system_var(dat_gnd_wdt, 0);
+    dat_set_system_var(dat_obc_gnd_wdt, 0);
     return CMD_OK;
 }
 
