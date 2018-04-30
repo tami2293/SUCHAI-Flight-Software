@@ -15,15 +15,16 @@ void cmd_weather_init(void)
 
 int cmd_send_weather(char *fmt, char *params, int nparams)
 {
-    int n_data = 3;
+    int n_data = 1;
     weather_data data[n_data];
     int rc = storage_weather_data_get(DAT_WEATHER_SYSTEM, data, n_data);
-    uint8_t node = 2;
+    uint8_t node = SCH_NODE_ARDUINO ;
 
     char msg[SCH_COM_MAX_LEN];
-    msg[0] = (uint8_t) SCH_TRX_PORT_WT;
-    memcpy(msg+1,(char*)&data, sizeof(weather_data)*2);
-    com_send_data(node, msg, (sizeof(weather_data)*2)+1);
+    msg[0] = (uint8_t) SCH_TRX_PORT_RS ;
+    assert(sizeof(weather_data)*n_data <= SCH_COM_MAX_LEN-1);
+    memcpy(msg+1,(char*)&data, sizeof(weather_data)*n_data);
+    com_send_data(node, msg, (sizeof(weather_data)*n_data)+1);
     if(rc > 0)
         return CMD_OK;
 
