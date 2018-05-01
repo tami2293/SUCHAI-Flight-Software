@@ -33,6 +33,7 @@ void cmd_drp_init(void)
     cmd_add("update_hours_alive", drp_update_hours_alive, "%d", 1);
     cmd_add("clear_gnd_wdt", drp_clear_gnd_wdt, "", 0);
     cmd_add("sample_obc_sensors", drp_sample_obc_sensors, "", 0);
+    cmd_add("reset_mission", drp_reset_mission, "", 0);
 }
 
 int drp_print_system_vars(char *fmt, char *params, int nparams)
@@ -40,7 +41,7 @@ int drp_print_system_vars(char *fmt, char *params, int nparams)
     LOGD(tag, "Displaying system variables list");
 
     //Take log_mutex to take control of the console
-    int rc = osSemaphoreTake(&log_mutex, portMAX_DELAY);
+    int rc = CSP_SEMAPHORE_OK; //osSemaphoreTake(&log_mutex, portMAX_DELAY);
     if(rc == CSP_SEMAPHORE_OK)
     {
         printf("system variables repository\n");
@@ -54,8 +55,7 @@ int drp_print_system_vars(char *fmt, char *params, int nparams)
         }
 
         //Exit critical zone
-        osSemaphoreGiven(&log_mutex);
-
+//        osSemaphoreGiven(&log_mutex);
         return CMD_OK;
     }
     else
@@ -150,4 +150,11 @@ int drp_sample_obc_sensors(char *fmt, char *params, int nparams)
 #endif
 
     return CMD_OK;
+}
+
+int drp_reset_mission(char *fmt, char *params, int nparams)
+{
+    dat_set_system_var(dat_balloon_phase, 0);
+    dat_set_system_var(dat_obc_hours_alive, 0);
+    dat_set_system_var(dat_balloon_glob, 2);
 }

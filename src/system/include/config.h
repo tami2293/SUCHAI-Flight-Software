@@ -54,7 +54,12 @@
 
 /* Data repository settings */
 #define SCH_STORAGE_MODE   	1   ///< Status repository location. (0) RAM, (1) Single external.
-#define SCH_STORAGE_FILE    "/tmp/suchai.db"
+#define SCH_STORAGE_FILE    "/home/pi/suchai.db"
 
+#define SCH_MIN_PHASE_A1 30
+#define SCH_MIN_PHASE_B 60
+#define SCH_MIN_PHASE_C 90
+#define SCH_MIN_PHASE_C1 100
+#define SCH_MIN_PHASE_D 270
 
 #endif	/* SUCHAI_CONFIG_H */

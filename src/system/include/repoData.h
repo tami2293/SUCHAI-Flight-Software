@@ -79,7 +79,7 @@ typedef enum dat_system{
 
     // Add custom status variables here
     dat_balloon_phase,          ///< Balloon phase (0: (A) ascend, 1 (A1) ascend, 2 (B) stable, 3 (C) descend, 4 (C) ground.
-
+    dat_balloon_glob,
     // Las element, do not edit
     dat_system_last_var         ///< Dummy element
 }dat_system_t;

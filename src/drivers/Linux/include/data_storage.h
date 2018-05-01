@@ -188,6 +188,7 @@ typedef struct weather_data {
     float Alt;
     float Temp2;
     float Humidity;
+    float Temp3;
     float IMU1;
     float IMU2;
     float IMU3;
@@ -214,7 +215,8 @@ typedef struct data_iridium {
     float GPS_Alt;  // 32
     float GPS_Crse; // 36
     float GPS_Speed;// 40
-    uint8_t GPS_VAL;// 41
+    float Temp3;// 44
+    uint8_t GPS_VAL;// 45
     uint8_t padding[3];
 } data_iridium_t;
 

@@ -10,6 +10,7 @@ void cmd_weather_init(void)
     cmd_add("receive_weather_data", cmd_receive_weather, "%s", 1);
     cmd_add("send_iridium", cmd_send_iridium, "%d", 1);
     cmd_add("get_weather", cmd_get_weather, "", 0);
+    cmd_add("cut_balloon", cmd_cut_balloon, "%d", 1);
 }
 
 
@@ -81,6 +82,7 @@ int cmd_send_iridium(char *fmt, char *params, int nparams)
             iridium.Pressure = sonda.Pressure;
             iridium.Temp1 = sonda.Temp1;
             iridium.Temp2 = sonda.Temp2;
+            iridium.Temp3 = sonda.Temp3;
 
             com_send_data(SCH_NODE_IRIDIUM, (char *)&iridium, sizeof(data_iridium_t));
         }
@@ -89,6 +91,20 @@ int cmd_send_iridium(char *fmt, char *params, int nparams)
             return CMD_OK;
     }
     return CMD_FAIL;
+}
+
+int cmd_cut_balloon(char *fmt, char *params, int nparams)
+{
+    // Send frame: [NODE=2][PORT=12|13][ Padding(98)    ]
+    int port;
+    if(sscanf(params, fmt, &port) == nparams)
+    {
+        char msg[SCH_COM_MAX_LEN];
+        uint8_t node = SCH_NODE_ARDUINO;
+        msg[0] = port;
+        assert(port==12 || port==13);
+        com_send_data(node, msg, 1);
+    }
 }
 
 //int cmd_send_photo(char *fmt, char *params, int nparams){

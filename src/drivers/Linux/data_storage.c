@@ -436,6 +436,7 @@ int storage_table_weather_init(char* table, int drop)
                                       "gps_SS INTEGER, "
                                       "gps_SAT INTEGER, "
                                       "gps_VAL INTEGER, "
+                                      "temp3 REAL, "
                                       "rssi INTEGER);", table);
 
         rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
@@ -507,6 +508,7 @@ int storage_weather_data_get(const char *table, weather_data data[], int n)
             data[i].GPS_SS = (uint8_t)atoi(results[(i*col)+col+17]);
             data[i].GPS_Sat = (uint32_t)atoi(results[(i*col)+col+18]);
             data[i].GPS_VAL = (uint8_t)atoi(results[(i*col)+col+19]);
+            data[i].Temp3 = atof(results[(i*col)+col+20]);
         }
     }
     return 0;
@@ -531,11 +533,11 @@ int storage_weather_data_set(const char *table, weather_data *data)
     char *sql = sqlite3_mprintf(
             "INSERT OR REPLACE INTO %s "
                     "(date_time, temp1, temp2, press1, height, humidity, imu1, imu2, imu3, gps_lat, gps_lon, gps_height, gps_cur, gps_v,"
-                    " gps_HH, gps_MM, gps_SS, gps_SAT, gps_VAL)\n "
-                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u);",
+                    " gps_HH, gps_MM, gps_SS, gps_SAT, gps_VAL, temp3)\n "
+                    "VALUES (datetime(\"now\"), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %u, %u, %u, %u, %u, %f);",
             table, data->Temp1, data->Temp2, data->Pressure, data->Alt, data->Humidity, data->IMU1, data->IMU2, data->IMU3,
             data->GPS_Lat, data->GPS_Lng, data->GPS_Alt, data->GPS_Crse, data->GPS_Speed, data->GPS_HH, data->GPS_MM,
-            data->GPS_SS, data->GPS_Sat, data->GPS_VAL);
+            data->GPS_SS, data->GPS_Sat, data->GPS_VAL, data->Temp3);
 
     rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
 
@@ -562,6 +564,7 @@ void print_weather_data(weather_data *data)
     printf("Alt: %f\n", data->Alt);
     printf("Temp2: %f\n", data->Temp2);
     printf("Humidity: %f\n", data->Humidity);
+    printf("Temp3: %f\n", data->Temp3);
     printf("IMU1: %f\n", data->IMU1);
     printf("IMU2: %f\n", data->IMU2);
     printf("IMU3: %f\n", data->IMU3);

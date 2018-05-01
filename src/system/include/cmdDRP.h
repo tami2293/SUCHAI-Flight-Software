@@ -89,5 +89,7 @@ int drp_clear_gnd_wdt(char *fmt, char *params, int nparams);
  */
 int drp_sample_obc_sensors(char *fmt, char *params, int nparams);
 
+int drp_reset_mission(char *fmt, char *params, int nparams);
+
 
 #endif /* CMD_DRP_H */

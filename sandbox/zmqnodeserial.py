@@ -41,8 +41,8 @@ def console(port="8001", ip="localhost", to_read=255):
             if (len(data) == to_read) and (not data == '\r'):
                 print("SER: ", len(data), data)
                 sock.send(data)
-            # else:
-            #     print("read:", len(data))
+            else:
+                print("SER (tout):", len(data), data)
 
         except UnicodeDecodeError as e:
             print(e)
@@ -65,6 +65,7 @@ def get_parameters():
     parser.add_argument("-l", "--len", type=int, default=128, help="Frame length")
     parser.add_argument("dev", help="Serial port eg: /dev/tty0, /dev/ttyUSB0")
     parser.add_argument("baud", type=int, help="Baudrate eg: 115200, 500000")
+    parser.add_argument("-t", "--timeout", type=float, default=0.25, help="Serial read timeout")
 
     return parser.parse_args()
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     tasks = []
 
     try:
-        serial_port = serial.Serial(args.dev, args.baud, timeout=0.1)
+        serial_port = serial.Serial(args.dev, args.baud, timeout=args.timeout)
     except Exception as e:
         print(e)
 

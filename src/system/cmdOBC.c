@@ -85,6 +85,7 @@ int obc_reset(char *fmt, char *params, int nparams)
     printf("Resetting system NOW!!\n");
 
     #ifdef LINUX
+        system("sudo reboot");
         exit(0);
     #endif
     #ifdef AVR32

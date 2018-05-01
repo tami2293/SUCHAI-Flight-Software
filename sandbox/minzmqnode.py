@@ -21,20 +21,22 @@ def console(port="8001", ip="localhost"):
     ctx = zmq.Context(1)
     sock = ctx.socket(zmq.PUB)
     sock.connect('tcp://{}:{}'.format(ip, port))
-    prompt = "[node({})] <message>: "
+    prompt = "[node({}) port{}] <message>: "
     node = 1
+    port = 11
     
     while True:
         try:
-            cmd = input(prompt.format(node)).split(" ", 1)
+            cmd = input(prompt.format(node, port)).split(" ", 1)
             if len(cmd) > 1:
                 node = int(cmd[0])
-                data = cmd[1]
+                port = cmd[1]
+                data = cmd[2]
             else:
                 data = cmd[0]
 
             if len(data) > 0:
-                msg = (chr(node) + data).encode("ascii","replace")
+                msg = (chr(node) + chr(port) + data).encode("ascii","replace")
                 #print(msg)
                 sock.send(msg)
         except Exception:
