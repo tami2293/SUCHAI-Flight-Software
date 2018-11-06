@@ -4,18 +4,19 @@ sudo apt-get install build-essential
 sudo apt-get install python3-pip python-pip
 sudo apt-get install git-all
 sudo apt-get install libsqlite3-dev
-sudo apt-get install libzmq3-dev|
+sudo apt-get install libzmq3-dev
 sudo apt-get install cmake
 sudo pip install pyzmq-static
 sudo apt install python3-gpiozero python-gpiozero
 #sudo pip3 install pyzmq-static
 sudo apt-get install python3-zmq
 #flight software repo
-git clone https://github.com/spel-uchile/SUCHAI-Flight-Software.git
+#git clone https://github.com/spel-uchile/SUCHAI-Flight-Software.git
 #install libcsp dep
+cd ~/Spel
 cd SUCHAI-Flight-Software
 cd src/drivers/Linux/libcsp
-sh install_csp.sh
+sudo sh install_csp.sh
 cd /home/pi/Spel
 #balloon deps
 sudo apt-get install gpsd gpsd-clients python-gps python3-gps
@@ -24,7 +25,7 @@ sudo apt-get install python-serial python3-serial
 
 #balloon repo
 git clone https://github.com/spel-uchile/balloon_experiment.git
-ln -s balloon_experiment/ submodules/
+ln -s balloon_experiment/sw/raspberry sub-modules/
 
 #bmp deps
 cd ~
