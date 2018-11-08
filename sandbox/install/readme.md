@@ -4,14 +4,14 @@
 * Git
 
 ## Install instructions ##
-* mkdir /home/pi/Spel
-* cd ~/Spel
-* git clone https://github.com/spel-uchile/SUCHAI-Flight-Software.git
-* cd SUCHAI-Flight-Software
-* git checkout balloon2
-* cd ~/Spel/SUCHAI-Flight-Software/sandbox/install/
-* sudo sh install_balloon.sh
-* sudo sh install_direwolf.sh
+1. mkdir /home/pi/Spel
+2. cd ~/Spel
+3. git clone https://github.com/spel-uchile/SUCHAI-Flight-Software.git
+4. cd SUCHAI-Flight-Software
+5. git checkout balloon2
+6. cd ~/Spel/SUCHAI-Flight-Software/sandbox/install/
+7. sudo sh install_balloon.sh
+8. sudo sh install_direwolf.sh
 
 ## Raspberry setup ##
 * Enable i2c, ssh
