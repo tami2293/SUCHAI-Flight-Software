@@ -11,7 +11,7 @@
 5. git checkout balloon2
 6. cd ~/Spel/SUCHAI-Flight-Software/sandbox/install/
 7. sudo sh install_balloon.sh
-8. sudo sh install_direwolf.sh
+8. sudo sh install_aprs.sh
 
 ## Raspberry setup ##
 * Enable i2c, ssh
