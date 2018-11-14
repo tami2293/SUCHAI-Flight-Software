@@ -31,6 +31,7 @@
 #define DAT_GPS_TABLE "gps_table"
 #define DAT_PRS_TABLE "pressure_table"
 #define DAT_DPL_TABLE "deploy_table"
+#define DAT_IMET_TABLE "imet_table"
 
 /**
  * System level status variables

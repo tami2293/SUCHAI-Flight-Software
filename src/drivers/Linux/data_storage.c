@@ -436,6 +436,24 @@ int storage_table_deploy_init(char* table, int drop)
     return storage_table_generic_init(table, init_sql, drop);
 }
 
+int storage_table_imet_init(char* table, int drop)
+{
+    char * init_sql;
+    init_sql= "CREATE TABLE IF NOT EXISTS %s("
+              "idx INTEGER PRIMARY KEY, "
+              "date_time TEXT, "
+              "pressure INTEGER, "
+              "temperature INTEGER, "
+              "humidity INTEGER, "
+              "date TEXT, "
+              "time TEXT, "
+              "latitude INTEGER, "
+              "longitude INTEGER, "
+              "altitude INTEGER, "
+              "satellites INTEGER);";
+    return storage_table_generic_init(table, init_sql, drop);
+}
+
 int storage_table_generic_init(char* table, char* init_sql, int drop)
 {
     char *err_msg;
@@ -691,6 +709,88 @@ int storage_table_dpl_get(const char* table, dpl_data data[], int n)
     return 0;
 }
 
+int storage_table_imet_set(const char* table, imet_data* data)
+{
+    char *err_msg;
+    int rc;
+
+    char *sql = sqlite3_mprintf(
+            "INSERT OR REPLACE INTO %s "
+            "(date_time, pressure, temperature, humidity, date, time, latitude, longitude, altitude, satellites)\n "
+            "VALUES (datetime(\"now\"), %d, %d, %d, \"%s\", \"%s\", %d, %d, %d, %d);",
+            table, data->pressure, data->temperature, data->humidity, data->date, data->time, data->latitude, data->longitude, data->altitude, data->satellites);
+
+    rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
+
+    if (rc != SQLITE_OK)
+    {
+        LOGE(tag, "SQL error: %s", err_msg);
+        sqlite3_free(err_msg);
+        sqlite3_free(sql);
+        return -1;
+    }
+    else
+    {
+        LOGI(tag, "Inserted  gps data");
+        sqlite3_free(err_msg);
+        sqlite3_free(sql);
+        return 0;
+    }
+}
+
+int storage_table_imet_get(const char* table, imet_data data[], int n)
+{
+    char **results;
+    char *err_msg;
+
+    char *sql = sqlite3_mprintf("SELECT * FROM %s ORDER BY idx DESC LIMIT %d", table, n);
+
+    int row;
+    int col;
+
+    // execute statement
+    sqlite3_get_table(db, sql, &results, &row, &col, &err_msg);
+
+    if(row==0 || col==0)
+    {
+        LOGI(tag, "IMET table empty");
+        return 0;
+    }
+    else
+    {
+        LOGI(tag, "IMET table")
+        int i;
+        for (i = 0; i < (col*row)+col; i++)
+        {
+            printf("%s\t", results[i]);
+            if ((i + 1) % col == 0)
+                printf("\n");
+        }
+
+        for (i = 0; i < row; i++)
+        {
+            int pressure;
+            int temperature;
+            int humidity;
+            char date[11];
+            char time[9];
+            int latitude;
+            int longitude;
+            int altitude;
+            int satellites;
+
+            data[i].pressure=  atof(results[(i*col)+col+2]);
+            data[i].temperature = atof(results[(i*col)+col+3]);
+            data[i].humidity = atof(results[(i*col)+col+4]);
+            strcpy(data[i].date, results[(i*col)+col+5]);
+            strcpy(data[i].time, results[(i*col)+col+6]);
+            data[i].latitude = atoi(results[(i*col)+col+7]);
+            data[i].longitude = atoi(results[(i*col)+col+8]);
+            data[i].satellites = atoi(results[(i*col)+col+9]);
+        }
+    }
+    return 0;
+}
 
 
 

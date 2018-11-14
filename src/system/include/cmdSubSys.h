@@ -23,5 +23,6 @@ int close_dpl_sm(char *fmt, char *params, int nparams);
 int send_iridium_data(char *fmt, char *params, int nparams);
 int send_iridium_msg1(char *fmt, char *params, int nparams);
 int send_iridium_msg2(char *fmt, char *params, int nparams);
+int get_imet_data(char *fmt, char *params, int nparams);
 
 #endif //SUCHAI_FLIGHT_SOFTWARE_CMDSUBSYS_H

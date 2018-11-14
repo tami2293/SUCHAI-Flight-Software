@@ -9,7 +9,7 @@ python3 zmqhub.py --mon  > ~/Spel/mission-history/zmq_hub-"$(date "+%FT%T")".log
 SUBMODULES=~/Spel/sub_modules/
 cd $SUBMODULES
 python3 bmp/bmp_com.py  > ~/Spel/mission-history/bmp_com-"$(date "+%FT%T")".log 2>&1 &
-#python3 dpl/dpl_com.py > ~/Spel/mission-history/dpl_com-"$(date "+%FT%T")".log 2>&1 &
+python3 dpl/dpl_com.py > ~/Spel/mission-history/dpl_com-"$(date "+%FT%T")".log 2>&1 &
 python gps/gps_com.py > ~/Spel/mission-history/gps_com-"$(date "+%FT%T")".log 2>&1 &
 #python3 iridium/ird_com.py > ~/Spel/mission-history/ird_com-"$(date "+%FT%T")".log 2>&1 &
 

@@ -195,6 +195,19 @@ int storage_table_pressure_init(char* table, int drop);
  *
  * @return 0 OK, -1 Error
  */
+int storage_table_imet_init(char* table, int drop);
+
+/**
+ * Init imet payload data table
+ *
+ * @note: non-reentrant function, use mutex to sync access
+ *
+ * @param table Str. table name
+ * @param drop Int. set to 1 to drop table and 0 to create
+ *
+ * @return 0 OK, -1 Error
+ */
+
 int storage_table_deploy_init(char* table, int drop);
 
 /**
@@ -307,5 +320,42 @@ int storage_table_dpl_set(const char* table, dpl_data* data);
  * @return 0 OK, -1 Error
  */
 int storage_table_dpl_get(const char* table, dpl_data data[], int n);
+
+typedef struct imet_data {
+    int pressure;
+    int temperature;
+    int humidity;
+    char date[11];
+    char time[9];
+    int latitude;
+    int longitude;
+    int altitude;
+    int satellites;
+} imet_data;
+
+/**
+ * Set a imet data frame
+ *
+ * @note: non-reentrant function, use mutex to sync access
+ *
+ * @param table Str. table name
+ * @param data Struct. struct containing imet data
+ *
+ * @return 0 OK, -1 Error
+ */
+int storage_table_imet_set(const char* table, imet_data* data);
+
+/**
+ * Get n imet data frames
+ *
+ * @note: non-reentrant function, use mutex to sync access
+ *
+ * @param table Str. table name
+ * @param data Struct array. array with imet data
+ * @param n Int. number of frames obtained
+ *
+ * @return 0 OK, -1 Error
+ */
+int storage_table_imet_get(const char* table, imet_data data[], int n);
 
 #endif //SCH_PERSISTENT_H

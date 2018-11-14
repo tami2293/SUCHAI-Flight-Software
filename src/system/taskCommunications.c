@@ -249,7 +249,6 @@ static void com_receive_tm(csp_packet_t *packet, int src)
         // Scan a command and parameter string: <command> [parameters]
         ok = sscanf((char*)packet->data, "%f %f %f", &pressure, &temperature, &height);
 
-
         prs_data data;
         printf("pressure: %f", data.pressure);
         data.pressure = pressure;
@@ -257,5 +256,32 @@ static void com_receive_tm(csp_packet_t *packet, int src)
         data.height = height;
 
         storage_table_prs_set(DAT_PRS_TABLE, &data);
+    } else if (src == COM_IMET_NODE) {
+        int pressure;
+        int temperature;
+        int humidity;
+        char date[11];
+        char time[9];
+        int latitude;
+        int longitude;
+        int altitude;
+        int satellites;
+
+        // Scan a command and parameter string: <command> [parameters]
+        ok = sscanf((char *) packet->data, "%d %d %d %s %s %d %d %d %d", &pressure, &temperature, &humidity, date,
+                    time, &latitude, &longitude, &altitude, &satellites);
+
+        imet_data data;
+        data.pressure = pressure;
+        data.temperature= temperature;
+        data.humidity = humidity;
+        strcpy(data.date, date);
+        strcpy(data.time, time);
+        data.latitude = latitude;
+        data.longitude = longitude;
+        data.altitude = altitude;
+        data.satellites = satellites;
+
+        storage_table_imet_set(DAT_IMET_TABLE, &data);
     }
 }

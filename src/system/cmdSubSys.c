@@ -17,50 +17,55 @@ void cmd_subsys_init(void) {
     cmd_add("send_iridium_data", send_iridium_data, "", 2);
     cmd_add("send_iridium_msg1", send_iridium_msg1, "", 0);
     cmd_add("send_iridium_msg2", send_iridium_msg2, "", 0);
+    cmd_add("get_imet_data", get_imet_data, "", 0);
 }
 
 int get_gps_data(char *fmt, char *params, int nparams) {
     char* param="5 get_gps_data";
     com_send_rpt("%d %s", param, 2);
-    LOGD(tag, "Getting data!");
+    LOGD(tag, "Getting gps data!");
     return CMD_OK;
 }
 
 int get_dpl_data(char *fmt, char *params, int nparams) {
     char* param="2 get_dpl_data";
     com_send_rpt("%d %s", param, 2);
-    LOGD(tag, "Getting data!");
+    LOGD(tag, "Getting dpl data!");
     return CMD_OK;
 }
 
 int get_prs_data(char *fmt, char *params, int nparams) {
     char* param="4 get_prs_data";
     com_send_rpt("%d %s", param, 2);
-    LOGD(tag, "Getting data!");
+    LOGD(tag, "Getting prs data!");
     return CMD_OK;
 }
 
 int open_dpl_la(char *fmt, char *params, int nparams) {
     char* param="2 open_dpl_la";
     com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Opennig dpl la!");
     return CMD_OK;
 }
 
 int close_dpl_la(char *fmt, char *params, int nparams) {
     char* param="2 close_dpl_la";
     com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Closing dpl la!");
     return CMD_OK;
 }
 
 int open_dpl_sm(char *fmt, char *params, int nparams) {
     char* param="2 open_dpl_sm";
     com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Opennig dpl sm!");
     return CMD_OK;
 }
 
 int close_dpl_sm(char *fmt, char *params, int nparams) {
     char* param="2 close_dpl_sm";
     com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Closing dpl la!");
     return CMD_OK;
 }
 
@@ -97,5 +102,12 @@ int send_iridium_msg1(char *fmt, char *params, int nparams) {
 int send_iridium_msg2(char *fmt, char *params, int nparams) {
     char* param="6 EndMission";
     com_send_rpt("%d %s", param, 2);
+    return CMD_OK;
+}
+
+int get_imet_data(char *fmt, char *params, int nparams) {
+    char* param="7 get_imet_data";
+    com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Getting imet data!");
     return CMD_OK;
 }

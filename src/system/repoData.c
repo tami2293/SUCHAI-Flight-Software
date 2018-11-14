@@ -88,11 +88,15 @@ void dat_repo_init(void)
 
         //Init pressure data table subsystem
         rc=storage_table_pressure_init(DAT_PRS_TABLE, 0);
-        assertf(rc==0, tag, "Unable to create gps table");
+        assertf(rc==0, tag, "Unable to create prs table");
 
         //Init deploy data table subsystem
         rc=storage_table_deploy_init(DAT_DPL_TABLE, 0);
-        assertf(rc==0, tag, "Unable to create gps table");
+        assertf(rc==0, tag, "Unable to create dpl table");
+
+        //Init imet-xq data table subsystem
+        rc=storage_table_imet_init(DAT_IMET_TABLE, 0);
+        assertf(rc==0, tag, "Unable to create imet table");
     }
 #endif
 

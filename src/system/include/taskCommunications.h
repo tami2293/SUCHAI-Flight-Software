@@ -27,6 +27,7 @@
 #define COM_GPS_NODE 5
 #define COM_DPL_NODE 2
 #define COM_PRS_NODE 4
+#define COM_IMET_NODE 7
 
 void taskCommunications(void *param);
 
