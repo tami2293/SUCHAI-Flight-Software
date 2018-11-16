@@ -322,15 +322,15 @@ int storage_table_dpl_set(const char* table, dpl_data* data);
 int storage_table_dpl_get(const char* table, dpl_data data[], int n);
 
 typedef struct imet_data {
-    int pressure;
-    int temperature;
-    int humidity;
-    char date[11];
-    char time[9];
-    int latitude;
-    int longitude;
-    int altitude;
-    int satellites;
+    long pressure;
+    long temperature;
+    long humidity;
+    char date[13];
+    char time[13];
+    long latitude;
+    long longitude;
+    long altitude;
+    long satellites;
 } imet_data;
 
 /**

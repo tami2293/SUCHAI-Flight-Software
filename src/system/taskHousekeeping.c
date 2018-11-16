@@ -83,7 +83,7 @@ void taskHousekeeping(void *param)
         }
 
         /**
-         * In all Phases sample prs, dpl and gps every 10 seconds
+         * In all Phases sample prs, dpl, gps and imet every 10 seconds
          */
         if (1) {
             LOGD(tag, "elapsed second %u", elapsed_sec);
@@ -103,6 +103,10 @@ void taskHousekeeping(void *param)
             if ((elapsed_sec % 10) == 7) {
                 cmd_t *cmd_get_dpl = cmd_get_str("get_dpl_data");
                 cmd_send(cmd_get_dpl);
+            }
+            if ((elapsed_sec % 10) == 9) {
+                cmd_t *cmd_get_imet = cmd_get_str("get_imet_data");
+                cmd_send(cmd_get_imet);
             }
 
 
@@ -154,6 +158,17 @@ void taskHousekeeping(void *param)
             if (elapsed_sec == MIN_PHASE_C1*60 || elapsed_sec == MIN_PHASE_C1*60+1 || elapsed_sec == MIN_PHASE_C1*60+2 || elapsed_sec == MIN_PHASE_C1*60+3) {
                 cmd_t *cmd_send_iridium_msg2 = cmd_get_str("send_iridium_msg2");
                 cmd_send(cmd_send_iridium_msg2);
+            }
+
+            /**
+             * In Phase C1:
+                -send data through iridium
+            */
+            if(phase == phase_c1) {
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                    cmd_send(cmd_send_iridium);
+                }
             }
             /**
              * Always to do list

@@ -200,7 +200,6 @@ static void com_receive_tm(csp_packet_t *packet, int src)
         int satellites_number;
         int mode;
         int phase = dat_get_system_var(dat_balloon_phase);      // current phase
-    //    memset(timestamp, '\0', (size_t)25+1);
 
         // Scan a command and parameter string: <command> [parameters]
         ok = sscanf((char*)packet->data, "%s %f %f %f %f %f %d %d %d", timestamp, &latitude, &longitude, &height, &velocity_x, &velocity_y, &satellites_number, &mode, &phase);
@@ -215,15 +214,6 @@ static void com_receive_tm(csp_packet_t *packet, int src)
         data.satellites_number = satellites_number;
         data.mode = mode;
         data.phase = phase;
-
-    //    printf("timestamp is: %s \n", data.timestamp);
-    //    printf("latitud is: %f \n", data.latitude);
-    //    printf("longitude is: %f \n", data.longitude);
-    //    printf("heigth is: %f \n", data.height);
-    //    printf("velocity_x is: %f \n", data.velocity_x);
-    //    printf("veclocity_y is: %f \n", data.velocity_y);
-    //    printf("sat number is: %d \n", data.satellites_number);
-    //    printf("mode is: %d \n", data.mode);
 
         storage_table_gps_set(DAT_GPS_TABLE, &data);
     } else if (src == COM_DPL_NODE) {
@@ -257,18 +247,18 @@ static void com_receive_tm(csp_packet_t *packet, int src)
 
         storage_table_prs_set(DAT_PRS_TABLE, &data);
     } else if (src == COM_IMET_NODE) {
-        int pressure;
-        int temperature;
-        int humidity;
-        char date[11];
-        char time[9];
-        int latitude;
-        int longitude;
-        int altitude;
-        int satellites;
+        long pressure;
+        long temperature;
+        long humidity;
+        char date[13];
+        char time[13];
+        long latitude;
+        long longitude;
+        long altitude;
+        long satellites;
 
         // Scan a command and parameter string: <command> [parameters]
-        ok = sscanf((char *) packet->data, "%d %d %d %s %s %d %d %d %d", &pressure, &temperature, &humidity, date,
+        ok = sscanf((char *) packet->data, "%ld %ld %ld %s %s %ld %ld %ld %ld", &pressure, &temperature, &humidity, date,
                     time, &latitude, &longitude, &altitude, &satellites);
 
         imet_data data;

@@ -717,8 +717,7 @@ int storage_table_imet_set(const char* table, imet_data* data)
     char *sql = sqlite3_mprintf(
             "INSERT OR REPLACE INTO %s "
             "(date_time, pressure, temperature, humidity, date, time, latitude, longitude, altitude, satellites)\n "
-            "VALUES (datetime(\"now\"), %d, %d, %d, \"%s\", \"%s\", %d, %d, %d, %d);",
-            table, data->pressure, data->temperature, data->humidity, data->date, data->time, data->latitude, data->longitude, data->altitude, data->satellites);
+            "VALUES (datetime(\"now\"), %ld, %ld, %ld, \"%s\", \"%s\", %ld, %ld, %ld, %ld);", table, data->pressure, data->temperature, data->humidity, data->date, data->time, data->latitude, data->longitude, data->altitude, data->satellites);
 
     rc = sqlite3_exec(db, sql, dummy_callback, 0, &err_msg);
 
@@ -731,7 +730,7 @@ int storage_table_imet_set(const char* table, imet_data* data)
     }
     else
     {
-        LOGI(tag, "Inserted  gps data");
+        LOGI(tag, "Inserted  imet data");
         sqlite3_free(err_msg);
         sqlite3_free(sql);
         return 0;
@@ -769,24 +768,24 @@ int storage_table_imet_get(const char* table, imet_data data[], int n)
 
         for (i = 0; i < row; i++)
         {
-            int pressure;
-            int temperature;
-            int humidity;
-            char date[11];
-            char time[9];
-            int latitude;
-            int longitude;
-            int altitude;
-            int satellites;
+            long pressure;
+            long temperature;
+            long humidity;
+            char date[13];
+            char time[13];
+            long latitude;
+            long longitude;
+            long altitude;
+            long satellites;
 
-            data[i].pressure=  atof(results[(i*col)+col+2]);
-            data[i].temperature = atof(results[(i*col)+col+3]);
-            data[i].humidity = atof(results[(i*col)+col+4]);
+            data[i].pressure=  atol(results[(i*col)+col+2]);
+            data[i].temperature = atol(results[(i*col)+col+3]);
+            data[i].humidity = atol(results[(i*col)+col+4]);
             strcpy(data[i].date, results[(i*col)+col+5]);
             strcpy(data[i].time, results[(i*col)+col+6]);
-            data[i].latitude = atoi(results[(i*col)+col+7]);
-            data[i].longitude = atoi(results[(i*col)+col+8]);
-            data[i].satellites = atoi(results[(i*col)+col+9]);
+            data[i].latitude = atol(results[(i*col)+col+7]);
+            data[i].longitude = atol(results[(i*col)+col+8]);
+            data[i].satellites = atol(results[(i*col)+col+9]);
         }
     }
     return 0;
