@@ -702,8 +702,8 @@ int storage_table_dpl_get(const char* table, dpl_data data[], int n)
 
         for (i = 0; i < row; i++)
         {
-            data[i].lineal_actuator =  atof(results[(i*col)+col+2]);
-            data[i].servo_motor= atof(results[(i*col)+col+3]);
+            data[i].lineal_actuator =  atoi(results[(i*col)+col+2]);
+            data[i].servo_motor= atoi(results[(i*col)+col+3]);
         }
     }
     return 0;
@@ -785,7 +785,8 @@ int storage_table_imet_get(const char* table, imet_data data[], int n)
             strcpy(data[i].time, results[(i*col)+col+6]);
             data[i].latitude = atol(results[(i*col)+col+7]);
             data[i].longitude = atol(results[(i*col)+col+8]);
-            data[i].satellites = atol(results[(i*col)+col+9]);
+            data[i].altitude = atol(results[(i*col)+col+9]);
+            data[i].satellites = atol(results[(i*col)+col+10]);
         }
     }
     return 0;
