@@ -18,6 +18,7 @@ void cmd_subsys_init(void) {
     cmd_add("send_iridium_msg1", send_iridium_msg1, "", 0);
     cmd_add("send_iridium_msg2", send_iridium_msg2, "", 0);
     cmd_add("get_imet_data", get_imet_data, "", 0);
+    cmd_add("run_sstv", run_sstv, "", 0);
 }
 
 int get_gps_data(char *fmt, char *params, int nparams) {
@@ -112,5 +113,12 @@ int get_imet_data(char *fmt, char *params, int nparams) {
     char* param="7 get_imet_data";
     com_send_rpt("%d %s", param, 2);
     LOGD(tag, "Getting imet data!");
+    return CMD_OK;
+}
+
+int run_sstv(char *fmt, char *params, int nparams) {
+    char *param = "8 run_sstv";
+    com_send_rpt("%d %s", param, 2);
+    LOGD(tag, "Running sstv!");
     return CMD_OK;
 }

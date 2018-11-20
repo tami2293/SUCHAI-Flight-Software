@@ -59,6 +59,7 @@ void taskHousekeeping(void *param)
     unsigned int _01min_check = 1*60;       //1[m] condition
     unsigned int _05min_check = 5*60;       //5[m] condition
     unsigned int _10min_check = 10*60;      //10[m] condition
+    unsigned int _15min_check = 15*60;      //15[m] condition
     unsigned int _1hour_check = 60*60;      //01[h] condition
 
     int phase = dat_get_system_var(dat_balloon_phase);      // current phase
@@ -107,6 +108,10 @@ void taskHousekeeping(void *param)
             if ((elapsed_sec % 10) == 9) {
                 cmd_t *cmd_get_imet = cmd_get_str("get_imet_data");
                 cmd_send(cmd_get_imet);
+            }
+            if ((elapsed_sec % _15min_check) == 0) {
+                cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                cmd_send(cmd_run_sstv);
             }
 
 
