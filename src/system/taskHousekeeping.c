@@ -23,17 +23,19 @@
 static const char *tag = "Housekeeping";
 
 enum phase_n{
-    phase_a0, // 0: (A0) base,
-    phase_a,  // 1: (A) ascend,
-    phase_b,  // 2: (B) equilibrium,
-    phase_b1, // 3: (B1) deploy1,
-    phase_b2, // 4: (B2) deploy2,
-    phase_c,  // 5: (C) descend,
-    phase_c1, // 6: (C1) landing
+    phase_a0, // 0: (A0) testing,
+    phase_a1, // 1: (A1) preparation,
+    phase_a,  // 2: (A) ascend,
+    phase_b,  // 3: (B) equilibrium,
+    phase_b1, // 4: (B1) deploy1,
+    phase_b2, // 5: (B2) deploy2,
+    phase_c,  // 6: (C) descend,
+    phase_c1, // 7: (C1) landing
 };
 
 
-const int  MIN_PHASE_A  =   5;
+const int  MIN_PHASE_A  =  20;
+const int  MIN_PHASE_A1 =  25;
 const int  MIN_PHASE_B  = 115;
 const int  MIN_PHASE_B1 = 155;
 const int  MIN_PHASE_B2 = 157;
@@ -78,6 +80,9 @@ void taskHousekeeping(void *param)
         if (elapsed_sec == 1 || elapsed_sec == 2 || elapsed_sec == 3 || elapsed_sec == 4 ) {
             cmd_t *cmd_open_la = cmd_get_str("open_dpl_la");
             cmd_send(cmd_open_la);
+            /*set pi-camera looking at th horizon*/
+            cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
+            cmd_send(cmd_close_sm);
             
             cmd_t *cmd_send_iridium_msg1 = cmd_get_str("send_iridium_msg1");
             cmd_send(cmd_send_iridium_msg1);
@@ -114,6 +119,66 @@ void taskHousekeeping(void *param)
                 cmd_send(cmd_run_sstv);
             }
 
+            /**
+             * In Phase A0: Test main systems
+                -deploy actuator
+                -iridium module
+                -camera
+                -sstv
+            */
+            if(phase == phase_a0) {
+                /*Test open Lineal Actuator*/
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_open_la = cmd_get_str("open_dpl_la");
+                    cmd_send(cmd_open_la);
+                }
+
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                    cmd_send(cmd_send_iridium);
+                }
+
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_open_sm = cmd_get_str("open_dpl_sm");
+                    cmd_send(cmd_open_sm);
+                }
+
+                if ((elapsed_sec % _01min_check) == 3) {
+                    cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
+                    cmd_send(cmd_close_sm);
+                }
+
+                if ((elapsed_sec % _05min_check) == 0) {
+                    cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                    cmd_send(cmd_run_sstv);
+                }
+            }
+
+            /**
+             * In Phase A1: Set dafualts values
+                -deploy system
+                -camera
+                -iridiun startingMission msg
+            */
+            if(phase == phase_a1) {
+                /*Test open Lineal Actuator*/
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_open_la = cmd_get_str("open_dpl_la");
+                    cmd_send(cmd_open_la);
+                }
+
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
+                    cmd_send(cmd_close_sm);
+                }
+
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_send_iridium_msg1 = cmd_get_str("send_iridium_msg1");
+                    cmd_send(cmd_send_iridium_msg1);
+                }
+
+            }
+
 
             /**
              * In Phase B1:
@@ -134,11 +199,11 @@ void taskHousekeeping(void *param)
 
             /**
              * In Phase B2:
-                -deploy servo motor every 10 seconds
+                -point pi-camera to the starts (try cmd every 10 seconds)
                 -send data through iridium
             */
             if(phase == phase_b2) {
-                if ((elapsed_sec % 10) == 0) {
+                if ((elapsed_sec % _01min_check) == 0) {
                     cmd_t *cmd_open_sm = cmd_get_str("open_dpl_sm");
                     cmd_send(cmd_open_sm);
                 }
@@ -151,10 +216,16 @@ void taskHousekeeping(void *param)
 
             /**
              * In Phase C:
+                -point pi-camera to the horizon (try cmd every 10 seconds)
                 -send data through iridium
                 -send final msg through iridium (just once)
             */
             if(phase == phase_c) {
+                /*looking to the horizon*/
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
+                    cmd_send(cmd_close_sm);
+                }
                 if ((elapsed_sec % _01min_check) == 0) {
                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
                     cmd_send(cmd_send_iridium);
@@ -208,10 +279,19 @@ void change_system_phase()
             dat_set_system_var(dat_balloon_phase, phase_a0);
         }
     }
-    else if (min_alive > MIN_PHASE_A && min_alive <= MIN_PHASE_B)
+    else if (min_alive > MIN_PHASE_A && min_alive <= MIN_PHASE_A1)
+    {
+        LOGD(tag, "######################### We are in PHASE A1 #########################");
+        // We are in phase A1
+        if(current_phase != phase_a1){
+            dat_set_system_var(dat_balloon_phase, phase_a1);
+
+        }
+    }
+    else if (min_alive > MIN_PHASE_A1 && min_alive <= MIN_PHASE_B)
     {
         LOGD(tag, "######################### We are in PHASE A #########################");
-        // We are in phase A1
+        // We are in phase A
         if(current_phase != phase_a){
             dat_set_system_var(dat_balloon_phase, phase_a);
 
