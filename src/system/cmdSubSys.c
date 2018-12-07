@@ -91,7 +91,7 @@ int send_iridium_data(char *fmt, char *params, int nparams) {
 
     char msg[COM_FRAME_MAX_LEN];
 
-    sprintf(msg, "%s %0.5f %0.5f %0.3f %0.3f %0.3f %d %d %0.3f %0.3f %0.3f %d %d %ld %ld %ld %ld %ld %ld %d %d %s", gps_data_[0].timestamp,gps_data_[0].latitude,gps_data_[0].longitude,gps_data_[0].height,gps_data_[0].velocity_x,gps_data_[0].velocity_y,gps_data_[0].satellites_number,gps_data_[0].mode, prs_data_[0].pressure, prs_data_[0].temperature, prs_data_[0].height, dpl_data_[0].lineal_actuator, dpl_data_[0].servo_motor, imet_data_[0].longitude, imet_data_[0].latitude, imet_data_[0].altitude, imet_data_[0].humidity, imet_data_[0].temperature, imet_data_[0].pressure, sys_min_alive, gps_data_[0].phase, "EOF");
+    sprintf(msg, "%s %0.5f %0.5f %0.3f %0.3f %0.3f %0.3f %0.3f %0.3f %d %ld %ld %ld %ld %ld %ld %d %d %s", gps_data_[0].timestamp,gps_data_[0].latitude,gps_data_[0].longitude,gps_data_[0].height,gps_data_[0].velocity_x,gps_data_[0].velocity_y, prs_data_[0].pressure, prs_data_[0].temperature, prs_data_[0].height, dpl_data_[0].lineal_actuator, imet_data_[0].longitude, imet_data_[0].latitude, imet_data_[0].altitude, imet_data_[0].humidity, imet_data_[0].temperature, imet_data_[0].pressure, sys_min_alive, gps_data_[0].phase, "EOF");
     memcpy(data.frame.data.data8, (char *)&msg, strlen(msg));
     printf("msg=%d\n", strlen(msg));
     return com_send_data_nreply(NULL, (char *)&data, 0);

@@ -22,33 +22,27 @@
 
 static const char *tag = "Housekeeping";
 
+/* Flight Plan*/
+
 enum phase_n{
-    phase_a0, // 0: (A0) testing,
-    phase_a1, // 1: (A1) preparation,
-    phase_a,  // 2: (A) ascend,
-    phase_b,  // 3: (B) equilibrium,
-    phase_b1, // 4: (B1) deploy1,
-    phase_b2, // 5: (B2) deploy2,
-    phase_c,  // 6: (C) descend,
-    phase_c1, // 7: (C1) landing
+    phase_a0, // 0: (A0) testing,       [0, 20]     min  -->20 min
+    phase_a1, // 1: (A1) preparation,   [21, 26]    min  -->05 min
+    phase_a,  // 2: (A) ascend,         [27, 60]    min  -->33 min
+    phase_b,  // 3: (B) equilibrium,    [61, 95]    min  -->34 min
+    phase_b1, // 4: (B1) deploy1,       [96, 101]   min  -->05 min
+    phase_b2, // 5: (B2) deploy2,       [102, 107]  min  -->05 min
+    phase_c,  // 6: (C) descend,        [108, 138]  min  -->30 min
+    phase_c1, // 7: (C1) landing        [139, inf]  min  -->
 };
 
 
 const int  MIN_PHASE_A  =  20;
-const int  MIN_PHASE_A1 =  25;
-const int  MIN_PHASE_B  = 115;
-const int  MIN_PHASE_B1 = 155;
-const int  MIN_PHASE_B2 = 157;
-const int  MIN_PHASE_C  = 159;
-const int  MIN_PHASE_C1 = 189;
-
-/* Test Flight Plan*/
-/*const int  MIN_PHASE_A  =   2;
-const int  MIN_PHASE_B  =  4;
-const int  MIN_PHASE_B1 =  6;
-const int  MIN_PHASE_B2 =  8;
-const int  MIN_PHASE_C  =  10;
-const int  MIN_PHASE_C1 =  12;*/
+const int  MIN_PHASE_A1 =  26;
+const int  MIN_PHASE_B  = 60;
+const int  MIN_PHASE_B1 = 95;
+const int  MIN_PHASE_B2 = 101;
+const int  MIN_PHASE_C  = 107;
+const int  MIN_PHASE_C1 = 138;
 
 void taskHousekeeping(void *param)
 {
@@ -57,18 +51,26 @@ void taskHousekeeping(void *param)
     portTick delay_ms    = 1000;            //Task period in [ms]
 
     unsigned int elapsed_sec = 0;           // Seconds counter
+    unsigned int _01sec_check = 1;          //1[s] condition
     unsigned int _10sec_check = 10;         //10[s] condition
+    unsigned int _30sec_check = 30;         //30[s] condition
     unsigned int _01min_check = 1*60;       //1[m] condition
+    unsigned int _02min_check = 2*60;       //3[m] condition
     unsigned int _05min_check = 5*60;       //5[m] condition
     unsigned int _10min_check = 10*60;      //10[m] condition
     unsigned int _15min_check = 15*60;      //15[m] condition
     unsigned int _1hour_check = 60*60;      //01[h] condition
+    unsigned int _deploy_height = 10210;    //10.21[Km] height deploy condition
+    //96.7min, 10213.7
 
     int phase = dat_get_system_var(dat_balloon_phase);      // current phase
     int balloons = dat_get_system_var(dat_balloon_deploys); // balloons available
 
     portTick xLastWakeTime = osTaskGetTickCount();
     //printf("----- TICK %u %u\n", xLastWakeTime, *(&xLastWakeTime));
+
+    dpl_data dpl_data_[1];
+
     while(1)
     {
         osTaskDelayUntil(&xLastWakeTime, delay_ms); // Suspend task
@@ -89,38 +91,35 @@ void taskHousekeeping(void *param)
         }
 
         /**
-         * In all Phases sample prs, dpl, gps and imet every 10 seconds
+         * In all Phases sample prs, dpl, gps every 10 seconds
+         * In all Phases sample imet every 1 second
          */
         if (1) {
             LOGD(tag, "elapsed second %u", elapsed_sec);
             change_system_phase();
             phase = dat_get_system_var(dat_balloon_phase); // Determine current phase
 
-            if ((elapsed_sec % 10) == 1) {
+            if ((elapsed_sec % _10sec_check) == 1) {
                 cmd_t *cmd_get_gps = cmd_get_str("get_gps_data");
                 cmd_send(cmd_get_gps);
             }
 
-            if ((elapsed_sec % 10) == 4) {
+            if ((elapsed_sec % _10sec_check) == 5) {
                 cmd_t *cmd_get_prs = cmd_get_str("get_prs_data");
                 cmd_send(cmd_get_prs);
             }
 
-            if ((elapsed_sec % 10) == 7) {
+            if ((elapsed_sec % _10sec_check) == 9) {
                 cmd_t *cmd_get_dpl = cmd_get_str("get_dpl_data");
                 cmd_send(cmd_get_dpl);
             }
-            if ((elapsed_sec % 10) == 9) {
+            if ((elapsed_sec % _01sec_check) == 0) {//This is all the time
                 cmd_t *cmd_get_imet = cmd_get_str("get_imet_data");
                 cmd_send(cmd_get_imet);
             }
-            if ((elapsed_sec % _15min_check) == 0) {
-                cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
-                cmd_send(cmd_run_sstv);
-            }
 
             /**
-             * In Phase A0: Test main systems
+             * In Phase A0: Test main systems, 20 min
                 -deploy actuator
                 -iridium module
                 -camera
@@ -143,7 +142,7 @@ void taskHousekeeping(void *param)
                     cmd_send(cmd_open_sm);
                 }
 
-                if ((elapsed_sec % _01min_check) == 3) {
+                if ((elapsed_sec % _01min_check) == 30) {
                     cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
                     cmd_send(cmd_close_sm);
                 }
@@ -155,9 +154,9 @@ void taskHousekeeping(void *param)
             }
 
             /**
-             * In Phase A1: Set dafualts values
+             * In Phase A1: Set dafualts values, 05 min
                 -deploy system
-                -camera
+                -camera point at horizon
                 -iridiun startingMission msg
             */
             if(phase == phase_a1) {
@@ -179,27 +178,69 @@ void taskHousekeeping(void *param)
 
             }
 
+            /**
+             * In Phase A: ascend, 88 min
+             * sstv
+             */
+             if(phase == phase_a) {
+                 if ((elapsed_sec % _15min_check) == 0) {
+                     cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                     cmd_send(cmd_run_sstv);
+                 }
+                 if ((elapsed_sec % _30sec_check) == 0) {
+                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                     cmd_send(cmd_send_iridium);
+                 }
+             }
 
             /**
-             * In Phase B1:
-                -deploy linear actuator every 10 seconds
-                -send data through iridium
-            */
-            if(phase == phase_b1) {
-                if ((elapsed_sec % 10) == 0) {
-                    cmd_t *cmd_close_la = cmd_get_str("close_dpl_la");
-                    cmd_send(cmd_close_la);
+             * In Phase B: equilibrium, 58 min
+             * sstv
+             */
+            if(phase == phase_b) {
+                if ((elapsed_sec % _15min_check) == 0) {
+                    cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                    cmd_send(cmd_run_sstv);
                 }
-
-                if ((elapsed_sec % _01min_check) == 0) {
+                if ((elapsed_sec % _30sec_check) == 0) {
                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
                     cmd_send(cmd_send_iridium);
                 }
             }
 
+
             /**
-             * In Phase B2:
-                -point pi-camera to the starts (try cmd every 10 seconds)
+             * In Phase B1: deploy, 05 min
+                -point pi-camera to the starts (try cmd every 1 min)
+                -deploy linear actuator every 10 seconds
+                -send data through iridium
+            */
+            if(phase == phase_b1 || dpl_data_[0].lineal_actuator>=_deploy_height) {
+                if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_open_sm = cmd_get_str("open_dpl_sm");
+                    cmd_send(cmd_open_sm);
+                }
+                if(phase == phase_b1) {
+                    if ((elapsed_sec % 10) == 0) {
+                        cmd_t *cmd_close_la = cmd_get_str("close_dpl_la");
+                        cmd_send(cmd_close_la);
+                    }
+
+                    if ((elapsed_sec % _30sec_check) == 0) {
+                        cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                        cmd_send(cmd_send_iridium);
+                    }
+
+                    if ((elapsed_sec % _02min_check) == 0) {
+                        cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                        cmd_send(cmd_run_sstv);
+                    }
+                }
+            }
+
+            /**
+             * In Phase B2: deploy, 05 min
+                -point pi-camera to the starts (try cmd every 1 min)
                 -send data through iridium
             */
             if(phase == phase_b2) {
@@ -212,21 +253,45 @@ void taskHousekeeping(void *param)
                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
                     cmd_send(cmd_send_iridium);
                 }
+
+                if ((elapsed_sec % _02min_check) == 0) {
+                    cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                    cmd_send(cmd_run_sstv);
+                }
+
+                if ((elapsed_sec % _30sec_check) == 0) {
+                    cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                    cmd_send(cmd_send_iridium);
+                }
             }
 
             /**
-             * In Phase C:
+             * In Phase C: descend, 30 min
                 -point pi-camera to the horizon (try cmd every 10 seconds)
                 -send data through iridium
                 -send final msg through iridium (just once)
+                -send img (sstv)
             */
             if(phase == phase_c) {
                 /*looking to the horizon*/
-                if ((elapsed_sec % _01min_check) == 0) {
+                if ((elapsed_sec % _05min_check) == 0) {
                     cmd_t *cmd_close_sm = cmd_get_str("close_dpl_sm");
                     cmd_send(cmd_close_sm);
                 }
+                if ((elapsed_sec % _05min_check) == 150) {
+                    cmd_t *cmd_open_sm = cmd_get_str("open_dpl_sm");
+                    cmd_send(cmd_open_sm);
+                }
                 if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                    cmd_send(cmd_send_iridium);
+                }
+                if ((elapsed_sec % _10min_check) == 0) {
+                    cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                    cmd_send(cmd_run_sstv);
+                }
+
+                if ((elapsed_sec % _30sec_check) == 0) {
                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
                     cmd_send(cmd_send_iridium);
                 }
@@ -237,11 +302,20 @@ void taskHousekeeping(void *param)
             }
 
             /**
-             * In Phase C1:
+             * In Phase C1: landing,
                 -send data through iridium
+                -send img (sstv)
             */
             if(phase == phase_c1) {
                 if ((elapsed_sec % _01min_check) == 0) {
+                    cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
+                    cmd_send(cmd_send_iridium);
+                }
+                if ((elapsed_sec % _10min_check) == 0) {
+                    cmd_t *cmd_run_sstv = cmd_get_str("run_sstv");
+                    cmd_send(cmd_run_sstv);
+                }
+                if ((elapsed_sec % _30sec_check) == 0) {
                     cmd_t *cmd_send_iridium = cmd_get_str("send_iridium_data");
                     cmd_send(cmd_send_iridium);
                 }
@@ -249,6 +323,10 @@ void taskHousekeeping(void *param)
             /**
              * Always to do list
              */
+            if((elapsed_sec % _01min_check) == 0)
+            {
+                storage_table_dpl_get(DAT_DPL_TABLE, dpl_data_, 1);
+            }
             /* 1 min actions, update minutes alive counter*/
             if((elapsed_sec % _01min_check) == 0)
             {
