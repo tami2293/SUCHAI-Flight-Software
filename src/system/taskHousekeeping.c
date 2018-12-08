@@ -61,6 +61,7 @@ void taskHousekeeping(void *param)
     unsigned int _15min_check = 15*60;      //15[m] condition
     unsigned int _1hour_check = 60*60;      //01[h] condition
     unsigned int _deploy_height = 10210;    //10.21[Km] height deploy condition
+    unsigned int _deploy_height_max = 10310;//10.31[Km] error height deploy condition
     //96.7min, 10213.7
 
     int phase = dat_get_system_var(dat_balloon_phase);      // current phase
@@ -69,7 +70,7 @@ void taskHousekeeping(void *param)
     portTick xLastWakeTime = osTaskGetTickCount();
     //printf("----- TICK %u %u\n", xLastWakeTime, *(&xLastWakeTime));
 
-    dpl_data dpl_data_[1];
+    prs_data prs_data_[1];
 
     while(1)
     {
@@ -98,6 +99,7 @@ void taskHousekeeping(void *param)
             LOGD(tag, "elapsed second %u", elapsed_sec);
             change_system_phase();
             phase = dat_get_system_var(dat_balloon_phase); // Determine current phase
+            printf("--------------height = %0.3f", prs_data_[0].height);
 
             if ((elapsed_sec % _10sec_check) == 1) {
                 cmd_t *cmd_get_gps = cmd_get_str("get_gps_data");
@@ -215,7 +217,7 @@ void taskHousekeeping(void *param)
                 -deploy linear actuator every 10 seconds
                 -send data through iridium
             */
-            if(phase == phase_b1 || dpl_data_[0].lineal_actuator>=_deploy_height) {
+            if(phase == phase_b1 || (prs_data_[0].height>=_deploy_height && prs_data_[0].height<_deploy_height_max)) {
                 if ((elapsed_sec % _01min_check) == 0) {
                     cmd_t *cmd_open_sm = cmd_get_str("open_dpl_sm");
                     cmd_send(cmd_open_sm);
@@ -325,7 +327,7 @@ void taskHousekeeping(void *param)
              */
             if((elapsed_sec % _01min_check) == 0)
             {
-                storage_table_dpl_get(DAT_DPL_TABLE, dpl_data_, 1);
+                storage_table_prs_get(DAT_PRS_TABLE, prs_data_, 1);
             }
             /* 1 min actions, update minutes alive counter*/
             if((elapsed_sec % _01min_check) == 0)
