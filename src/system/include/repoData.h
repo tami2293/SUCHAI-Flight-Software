@@ -49,7 +49,7 @@ typedef struct sample_machine{
     int samples_left;
 } sample_machine_t;
 
-sample_machine_t machine;
+extern sample_machine_t machine;
 
 /**
  * Change sample machine state.
@@ -93,6 +93,7 @@ void dat_repo_close(void);
  * @param value Integer value to set the variable to
  */
 void dat_set_system_var(dat_system_t index, int value);
+void _dat_set_system_var(dat_system_t index, int value);  //Auxiliary function for testing
 
 /**
  * Returns an int field's value inside the status repository.
@@ -101,6 +102,7 @@ void dat_set_system_var(dat_system_t index, int value);
  * @return The field's value
  */
 int dat_get_system_var(dat_system_t index);
+int _dat_get_system_var(dat_system_t index);  //Auxiliary function for testing
 
 /**
  * Gets an executable command from the flight plan repo.
@@ -211,7 +213,7 @@ int dat_add_payload_sample(void* data, int payload);
  * @param delay Delay of the recent value
  * @return 0 if OK, -1 if and error occurred
  */
-int dat_get_recent_payload_sample(void* data, int payload, int delay);
+int dat_get_recent_payload_sample(void* data, int payload, int offset);
 
 /**
  * Deletes all memory sections in NOR FLASH.
