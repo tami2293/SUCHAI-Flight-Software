@@ -336,7 +336,7 @@ int cmd_repo_init(void)
     cmd_obc_init();
     cmd_drp_init();
     cmd_console_init();
-#if SCH_FP_ENABLED
+#if 1 //SCH_FP_ENABLED
     cmd_fp_init();
 #endif
 #ifdef SCH_USE_NANOPOWER
@@ -346,7 +346,7 @@ int cmd_repo_init(void)
     cmd_com_init();
     cmd_tm_init();
 #endif
-#ifdef SCH_SEN_ENABLED
+#if 1 //def SCH_SEN_ENABLED
     cmd_sensors_init();
 #endif
 #ifdef SCH_USE_GSSB

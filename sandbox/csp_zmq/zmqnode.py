@@ -197,7 +197,7 @@ class CspZmqNode(object):
         sock = _ctx.socket(zmq.SUB)
         sock.setsockopt(zmq.SUBSCRIBE, chr(int(node)).encode('ascii') if node is not None else b'')
         sock.setsockopt(zmq.RCVTIMEO, 1000)
-        sock.connect('tcp://{}:{}'.format(ip, port))
+        sock.connect('ipc:///tmp/zmqipcin')
         print("Reader started!")
 
         while self._run:
@@ -242,7 +242,7 @@ class CspZmqNode(object):
         """
         _ctx = ctx if ctx is not None else zmq.Context(1)
         sock = _ctx.socket(zmq.PUB)
-        sock.connect('tcp://{}:{}'.format(ip, port))
+        sock.connect('ipc:///temp/zmqipcout')
         print("Writer started!")
         while self._run:
             try:

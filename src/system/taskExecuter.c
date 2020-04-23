@@ -39,16 +39,20 @@ void taskExecuter(void *param)
             if(log_lvl >= LOG_LVL_INFO)
             {
                 char *cmd_name = cmd_get_name(run_cmd->id);
-                LOGI(tag, "Running the command: %s...", cmd_name);
+                LOGI(tag, "Running the command: %s... \nParams: %s", cmd_name, run_cmd->params);
                 free(cmd_name);
             }
 
             /* Execute the command */
+            __useconds_t init_cmd_exec_time = osTaskGetTickCount();
             cmd_stat = run_cmd->function(run_cmd->fmt, run_cmd->params, run_cmd->nparams);
+            __useconds_t end_cmd_exec_time = osTaskGetTickCount();
             cmd_free(run_cmd);
             run_cmd = NULL;
 
-            LOGI(tag, "Command result: %d", cmd_stat);
+            /* Calculate command execution time*/
+            int cmd_exec_time = end_cmd_exec_time - init_cmd_exec_time;
+            LOGI(tag, "Command result: %d \nExecution time: %u", cmd_stat, cmd_exec_time);
 
             /* Send the result to Dispatcher - BLOCKING */
             osQueueSend(executer_stat_queue, &cmd_stat, portMAX_DELAY);

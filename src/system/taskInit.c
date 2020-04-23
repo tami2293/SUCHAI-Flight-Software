@@ -90,6 +90,9 @@ void taskInit(void *param)
     if(t_ok != 0) LOGE(tag, "Task sensors not created!");
 #endif
 
+
+
+
     osTaskDelete(NULL);
 }
 
@@ -104,6 +107,7 @@ void init_communications(void)
     csp_debug_set_level(CSP_INFO, 1);
     csp_debug_set_level(CSP_BUFFER, 1);
     csp_debug_set_level(CSP_PACKET, 1);
+    csp_debug_set_level(CSP_PROTOCOL, 1);
     csp_debug_set_level(CSP_PROTOCOL, 1);
     csp_debug_set_level(CSP_LOCK, 0);
 

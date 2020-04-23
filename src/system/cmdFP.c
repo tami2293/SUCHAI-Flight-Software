@@ -78,12 +78,10 @@ int fp_set_unix(char *fmt, char *params, int nparams)
     char args[SCH_CMD_MAX_STR_PARAMS];
     memset(command, 0, SCH_CMD_MAX_STR_PARAMS);
     memset(args, 0, SCH_CMD_MAX_STR_PARAMS);
-
     if(sscanf(params, fmt, &unixtime, &executions, &periodical, &command, &next) == nparams-1)
     {
         strncpy(args, params+next, (size_t)SCH_CMD_MAX_STR_PARAMS);
         int rc = dat_set_fp(unixtime, command, args, executions, periodical);
-
         if (rc == 0)
             return CMD_OK;
         else

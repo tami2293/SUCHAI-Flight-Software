@@ -44,16 +44,16 @@
 #endif
 
 /* System debug configurations */
-#define LOG_LEVEL               LOG_LVL_INFO      ///< LOG_LVL_INFO |  LOG_LVL_DEBUG
-#define SCH_NAME                "SUCHAI-DEV"      ///< Project code name
-#define SCH_DEVICE_ID           0                 ///< Device unique ID
-#define SCH_SW_VERSION          "2.1.5"           ///< Software version
+#define LOG_LEVEL               LOG_LVL_INFO        ///< LOG_LVL_INFO |  LOG_LVL_DEBUG
+#define SCH_NAME                "SUCHAI-DEV"         ///< Project code name
+#define SCH_DEVICE_ID           0             ///< Device unique ID
+#define SCH_SW_VERSION          "2.1.4-53-ge815e"      ///< Software version
 
 /* General system settings */
 #define SCH_CON_ENABLED         1     ///< TaskConsole enabled (0 | 1)
 #define SCH_COMM_ENABLE         1    ///< TaskCommunications enabled (0 | 1)
-#define SCH_FP_ENABLED          1      ///< TaskFlightPlan enabled (0 | 1)
-#define SCH_HK_ENABLED          1      ///< TaskHousekeeping enabled (0 | 1)
+#define SCH_FP_ENABLED          0      ///< TaskFlightPlan enabled (0 | 1)
+#define SCH_HK_ENABLED          0      ///< TaskHousekeeping enabled (0 | 1)
 #define SCH_SEN_ENABLED         0     ///< TaskSensors enabled (0 | 1)
 #define SCH_TEST_ENABLED        0    ///< Set to run tests (0 | 1)
 #define SCH_WDT_PERIOD          120                ///< CPU watchdog timer period in seconds
@@ -73,8 +73,8 @@
 #define SCH_TRX_PORT_RPT        (11)               ///< Digirepeater port (resend packets)
 #define SCH_TRX_PORT_CMD        (12)               ///< Commands port (execute console commands)
 #define SCH_TRX_PORT_DBG        (13)               ///< Debug port, logs output
-#define SCH_COMM_ZMQ_OUT        "tcp://127.0.0.1:8002"  ///< Out socket URI
-#define SCH_COMM_ZMQ_IN         "tcp://127.0.0.1:8001"   ///< In socket URI
+#define SCH_COMM_ZMQ_OUT        "ipc:///tmp/suchaifs:8002"  ///< Out socket URI
+#define SCH_COMM_ZMQ_IN         "ipc:///tmp/suchaifs:8001"   ///< In socket URI
 #define SCH_TX_INHIBIT          10                 /// Default silent time in seconds [0, 1800 (30min)]
 #define SCH_TX_PWR              0                  /// Default TX power [0|1|2|3]
 #define SCH_TX_BCN_PERIOD       60                 /// Default beacon period in seconds
@@ -82,10 +82,10 @@
 #define SCH_TX_BAUD             4800               /// Default TRX baudrate [4800|9600|19200
 
 /* Data repository settings */
-#define SCH_STORAGE_MODE        1    ///< Status repository location. (0) RAM, (1) Single external.
+#define SCH_STORAGE_MODE        2    ///< Status repository location. (0) RAM, (1) Single external.
 #define SCH_STORAGE_TRIPLE_WR   1   ///< Tripled writing enabled (0 | 1)
 #define SCH_STORAGE_FILE        "/tmp/suchai.db"   ///< File to store the database, only if @SCH_STORAGE_MODE is 1
-#define SCH_STORAGE_PGUSER      "spel"
+#define SCH_STORAGE_PGUSER      "tamara"
 
 #define SCH_SECTIONS_PER_PAYLOAD 2                 ///< Memory blocks for storing each payload type TODO: Make configurable per payload
 #define SCH_SIZE_PER_SECTION 256*1024              ///< Size of each memory block in flash storage
@@ -112,7 +112,7 @@
 #define SCH_TASK_SEN_STACK        (5*256)   ///< Sensor task stack size in words
 
 #define SCH_BUFF_MAX_LEN          (256)     ///< General buffers max length in bytes
-#define SCH_BUFFERS_CSP           (10)       ///< Number of available CSP buffers
+#define SCH_BUFFERS_CSP           (500)       ///< Number of available CSP buffers
 #define SCH_FP_MAX_ENTRIES        (25)      ///< Max number of flight plan entries
 #define SCH_CMD_MAX_ENTRIES       (255)      ///< Max number of commands in the repository
 #define SCH_CMD_MAX_STR_PARAMS    (256)      ///< Limit for the parameters length

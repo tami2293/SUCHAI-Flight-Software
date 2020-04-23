@@ -55,6 +55,21 @@ void taskCommunications(void *param)
 
     int count_tc;
 
+    // Notify initialization is ready
+    /*char* rdy_msg = "Initialization is ready";
+    size_t msg_len = strlen(rdy_msg);
+    csp_packet_t *r_packet = csp_buffer_get(msg_len+1);
+    r_packet->length = (uint16_t)(msg_len+1);
+    memcpy(r_packet->data, rdy_msg, msg_len+1);
+    int res = csp_sendto(CSP_PRIO_HIGH, 9, 14, 32, CSP_O_NONE, r_packet, 500);
+    usleep(1000*2000);
+    if(res != 0)
+    {
+        csp_buffer_free((void *)r_packet);
+        LOGW(tag, "Error sending ready message!");
+    }
+    LOGI(tag, "Ready message sent");*/
+
     while(1)
     {
         /* CSP SERVER */
@@ -76,8 +91,8 @@ void taskCommunications(void *param)
                     com_receive_tc(packet);
                     csp_buffer_free(packet);
                     // Create a response packet and send
-                    rep_ok = csp_buffer_clone(rep_ok_tmp);
-                    csp_send(conn, rep_ok, 1000);
+                    // rep_ok = csp_buffer_clone(rep_ok_tmp);
+                    // csp_send(conn, rep_ok, 1000);
                     break;
 
                 case SCH_TRX_PORT_TM:
@@ -88,8 +103,8 @@ void taskCommunications(void *param)
                     com_receive_tm(packet);
                     csp_buffer_free(packet);
                     // Create a response packet and send
-                    rep_ok = csp_buffer_clone(rep_ok_tmp);
-                    csp_send(conn, rep_ok, 1000);
+                    // rep_ok = csp_buffer_clone(rep_ok_tmp);
+                    // csp_send(conn, rep_ok, 1000);
                     #ifdef SCH_RESEND_TM_NODE
                     // Resend a copy of the packet to another node
                     assert(tmp_packet != NULL);
@@ -124,8 +139,8 @@ void taskCommunications(void *param)
                     com_receive_cmd(packet);
                     csp_buffer_free(packet);
                     // Create a response packet and send
-                    rep_ok = csp_buffer_clone(rep_ok_tmp);
-                    csp_send(conn, rep_ok, 1000);
+                    // rep_ok = csp_buffer_clone(rep_ok_tmp);
+                    // csp_send(conn, rep_ok, 1000);
                     break;
 
                 case SCH_TRX_PORT_DBG:

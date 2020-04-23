@@ -62,8 +62,8 @@ class CspZmqHub(CspZmqNode):
         # Create sockets
         xpub_out = self._context.socket(zmq.XPUB)
         xsub_in = self._context.socket(zmq.XSUB)
-        xpub_out.bind('tcp://*:{}'.format(self.out_port_hub))
-        xsub_in.bind('tcp://*:{}'.format(self.in_port_hub))
+        xpub_out.bind('ipc:///tmp/zmqipcin')
+        xsub_in.bind('ipc:///tmp/zmqipcout')
 
         s_mon = None
         if self.monitor:
