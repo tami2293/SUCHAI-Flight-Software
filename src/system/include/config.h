@@ -47,7 +47,7 @@
 #define LOG_LEVEL               LOG_LVL_INFO        ///< LOG_LVL_INFO |  LOG_LVL_DEBUG
 #define SCH_NAME                "SUCHAI-DEV"         ///< Project code name
 #define SCH_DEVICE_ID           0             ///< Device unique ID
-#define SCH_SW_VERSION          "2.1.4-53-ge815e"      ///< Software version
+#define SCH_SW_VERSION          "2.1.4-54-g596b"      ///< Software version
 
 /* General system settings */
 #define SCH_CON_ENABLED         1     ///< TaskConsole enabled (0 | 1)
