@@ -126,7 +126,7 @@ def configure(ctx):
         ctx.env.append_unique('LIBS', ['pthread'])
 
     # Check for recursion
-    if ctx.path == ctx.srcnode:
+    if ctx.file_path == ctx.srcnode:
         ctx.options.install_csp = True
     
     # Windows build flags
@@ -239,7 +239,7 @@ def build(ctx):
     install_path = False
     if ctx.options.install_csp:
         install_path = '${PREFIX}/lib'
-        ctx.install_files('${PREFIX}/include/csp', ctx.path.ant_glob('include/csp/*.h'))
+        ctx.install_files('${PREFIX}/include/csp', ctx.file_path.ant_glob('include/csp/*.h'))
         ctx.install_files('${PREFIX}/include/csp/interfaces', 'include/csp/interfaces/csp_if_lo.h')
 
         if 'src/interfaces/csp_if_can.c' in ctx.env.FILES_CSP:
@@ -258,29 +258,29 @@ def build(ctx):
     ctx(export_includes='include', name='csp_h')
 
     ctx(features=ctx.env.FEATURES,
-        source=ctx.path.ant_glob(ctx.env.FILES_CSP, excl=ctx.env.EXCL_CSP),
+        source=ctx.file_path.ant_glob(ctx.env.FILES_CSP, excl=ctx.env.EXCL_CSP),
         target = 'csp',
         includes= ctx.env.INCLUDES_CSP,
         export_includes = ctx.env.INCLUDES_CSP,
         use = 'include freertos_h',
         install_path = install_path,
-    )
+        )
 
     # Build shared library for Python bindings
     if ctx.env.ENABLE_BINDINGS:
-        ctx.shlib(source=ctx.path.ant_glob(ctx.env.FILES_CSP),
-            target = 'csp',
-            includes= ctx.env.INCLUDES_CSP,
-            export_includes = 'include',
-            use = ['include'],
-            lib = ctx.env.LIBS)
+        ctx.shlib(source=ctx.file_path.ant_glob(ctx.env.FILES_CSP),
+                  target = 'csp',
+                  includes= ctx.env.INCLUDES_CSP,
+                  export_includes = 'include',
+                  use = ['include'],
+                  lib = ctx.env.LIBS)
 
     if ctx.env.ENABLE_EXAMPLES:
-        ctx.program(source = ctx.path.ant_glob('examples/simple.c'),
-            target = 'simple',
-            includes = ctx.env.INCLUDES_CSP,
-            lib = ctx.env.LIBS,
-            use = 'csp')
+        ctx.program(source = ctx.file_path.ant_glob('examples/simple.c'),
+                    target = 'simple',
+                    includes = ctx.env.INCLUDES_CSP,
+                    lib = ctx.env.LIBS,
+                    use = 'csp')
 
         if ctx.options.enable_if_kiss:
             ctx.program(source = 'examples/kiss.c',
@@ -297,10 +297,10 @@ def build(ctx):
                 use = 'csp')
 
         if 'windows' in ctx.env.OS:
-            ctx.program(source = ctx.path.ant_glob('examples/csp_if_fifo_windows.c'),
-                target = 'csp_if_fifo',
-                includes = ctx.env.INCLUDES_CSP,
-                use = 'csp')
+            ctx.program(source = ctx.file_path.ant_glob('examples/csp_if_fifo_windows.c'),
+                        target = 'csp_if_fifo',
+                        includes = ctx.env.INCLUDES_CSP,
+                        use = 'csp')
 
 def dist(ctx):
     ctx.excl = 'build/* **/.* **/*.pyc **/*.o **/*~ *.tar.gz'

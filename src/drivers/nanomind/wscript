@@ -80,7 +80,7 @@ def build(ctx):
     ctx(export_includes=['include'], name='include')
     ctx.recurse(modules)
     ctx.program(
-        source=ctx.path.ant_glob(ctx.env.FILES_NANOMIND, excl=ctx.env.EXCLUDES_NANOMIND),
+        source=ctx.file_path.ant_glob(ctx.env.FILES_NANOMIND, excl=ctx.env.EXCLUDES_NANOMIND),
         target='nanomind.elf',
         includes=['src/drivers/nanomind/include', 'src/drivers/nanomind/gs-drivers/include/', 'src/system/include', 'src/os/include'],
         defines = ctx.env.DEFINES_NANOMIND,
@@ -117,25 +117,25 @@ class UdevRules(BuildContext):
 def doc(ctx):
     git_rev = os.popen('git describe --always --dirty=-dirty 2> /dev/null || echo unknown').read().strip()
     ctx(
-        cwd    = ctx.path.abspath(),
+        cwd    = ctx.file_path.abspath(),
         rule   = 'doxygen doc/a3200-std.doxygen 2>&1 > /dev/null || echo doxygen error',
         source = './doc/a3200-std.doxygen',
         target = './doxygen/xml/index.xml',
     )
     ctx(
         rule   = "${SPHINX_BUILD} -q -c ./doc -b html -D release="+git_rev+" -d build/doc/doctrees . build/doc/html",
-        cwd    = ctx.path.abspath(),
-        source = ctx.path.ant_glob('**/*.rst') + [ctx.path.make_node('doc/conf.py')] + ['doxygen/xml/index.xml'],
+        cwd    = ctx.file_path.abspath(),
+        source =ctx.file_path.ant_glob('**/*.rst') + [ctx.file_path.make_node('doc/conf.py')] + ['doxygen/xml/index.xml'],
         target = './doc/html/doc/index.html',
     )
     ctx(
         rule   = "${SPHINX_BUILD} -q -c ./doc -b latex -D release="+git_rev+" -d build/doc/doctrees . build/doc/latex",
-        cwd    = ctx.path.abspath(),
-        source = ctx.path.ant_glob('**/*.rst') + [ctx.path.make_node('doc/conf.py')] + ['doc/html/doc/index.html'],
+        cwd    = ctx.file_path.abspath(),
+        source =ctx.file_path.ant_glob('**/*.rst') + [ctx.file_path.make_node('doc/conf.py')] + ['doc/html/doc/index.html'],
         target = './doc/latex/a3200-std.tex',
     )
     ctx(
-        cwd    = ctx.path.abspath(),
+        cwd    = ctx.file_path.abspath(),
         rule   = 'make -C build/doc/latex all-pdf 2>&1 > /dev/null || echo make error',
         source = './doc/latex/a3200-std.tex',
         target = './doc/latex/a3200-std.pdf',
@@ -147,10 +147,10 @@ class Doc(BuildContext):
    fun = 'doc'
 
 def dist(ctx):
-    if not ctx.path.find_node('build/doc/latex/a3200-std.pdf'):
+    if not ctx.file_path.find_node('build/doc/latex/a3200-std.pdf'):
         ctx.fatal('You forgot to run \'waf doc\' first, we need to include the documentation in the output')
 
     git_rev = os.popen('git describe --always --dirty=-dirty 2> /dev/null || echo unknown').read().strip()
     ctx.base_name = 'a3200-sdk-lite-' + git_rev
     os.system('cp build/doc/latex/a3200-std.pdf doc/gs-man-nanomind-a3200-sdk-lite-' + git_rev + '.pdf')
-    ctx.files     = ctx.path.ant_glob(['waf', 'wscript', 'eclipse.py', 'program.py', 'client/*', 'src/*', 'lib/**', 'doc/**', 'CHANGELOG', 'build/nanomind*'])
+    ctx.files     = ctx.file_path.ant_glob(['waf', 'wscript', 'eclipse.py', 'program.py', 'client/*', 'src/*', 'lib/**', 'doc/**', 'CHANGELOG', 'build/nanomind*'])

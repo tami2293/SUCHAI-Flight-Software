@@ -47,7 +47,7 @@
 #define LOG_LEVEL               LOG_LVL_INFO        ///< LOG_LVL_INFO |  LOG_LVL_DEBUG
 #define SCH_NAME                "SUCHAI-DEV"         ///< Project code name
 #define SCH_DEVICE_ID           0             ///< Device unique ID
-#define SCH_SW_VERSION          "2.1.4-54-g596b"      ///< Software version
+#define SCH_SW_VERSION          "v1.0-6-g9e81"      ///< Software version
 
 /* General system settings */
 #define SCH_CON_ENABLED         1     ///< TaskConsole enabled (0 | 1)
@@ -86,6 +86,8 @@
 #define SCH_STORAGE_TRIPLE_WR   1   ///< Tripled writing enabled (0 | 1)
 #define SCH_STORAGE_FILE        "/tmp/suchai.db"   ///< File to store the database, only if @SCH_STORAGE_MODE is 1
 #define SCH_STORAGE_PGUSER      "tamara"
+#define SCH_STORAGE_PGPASS      "proyectosuchai2020"
+#define SCH_STORAGE_PGHOST      "localhost"
 
 #define SCH_SECTIONS_PER_PAYLOAD 2                 ///< Memory blocks for storing each payload type TODO: Make configurable per payload
 #define SCH_SIZE_PER_SECTION 256*1024              ///< Size of each memory block in flash storage
